@@ -1,0 +1,41 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.WorkMySets" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="fontFamily">@font/poppins</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondaryLight</item>
+        <item name="android:windowBackground">@color/bgDark</item>
+        <item name="textColor">@color/bgLight</item>
+        <item name="cardViewStyle">@style/ThemeAwareCardViewStyle</item>
+        <item name="linearProgressIndicatorStyle">@style/ThemeAwareProgressBar</item>
+    </style>
+
+    <style name="Theme.WorkMySets" parent="Base.Theme.WorkMySets" />
+
+    <style name="ThemeAwareCardViewStyle">
+        <item name="cardBackgroundColor">@color/accentDark</item>
+    </style>
+
+    <style name="ThemeAwareProgressBar">
+        <item name="indicatorColor">@color/primary</item>
+        <item name="trackColor">@color/mutedDark</item>
+    </style>
+
+    <style name="SmoothBottomBarStyle">
+        <item name="backgroundColor">@color/bgDark</item>
+        <item name="textColor">@color/white</item>
+        <item name="iconTint">@color/primary</item>
+        <item name="indicatorColor">@color/primary</item>
+    </style>
+
+    <style name="ThemeAwareImageButton">
+        <item name="tint">@color/secondary</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="ThemeAwareColor">
+        <item name="textColor">@color/bgLight</item>
+        <item name="tint">@color/bgLight</item>
+    </style>
+
+</resources>

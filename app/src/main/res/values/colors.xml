@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bgLight">#F5F7FA</color>
+    <color name="bgDark">#222</color>
+    <color name="primary">#6c63ff</color>
+    <color name="secondary">#6C757D</color>
+    <color name="secondaryLight">#BCC3C9</color>
+    <color name="mutedLight">#212529bf</color>
+    <color name="mutedDark">#645C71</color>
+    <color name="accentDark">#2C2C2E</color>
+    <color name="accent1">#ff8e6b</color>
+    <color name="accent2">#ef4ad4</color>
+    <color name="accent3">#69baa5</color>
+    <color name="primaryLight">#DBD9FF</color>
+</resources>
