@@ -19,6 +19,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,10 +27,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.adapters.ExerciseCheckboxAdapter
 import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.models.Schedule
 import com.example.workmysets.data.models.Workout
 import com.example.workmysets.data.repositories.ExerciseRepository
 import com.example.workmysets.data.repositories.WorkoutRepository
 import com.example.workmysets.data.viewmodels.ExerciseViewModel
+import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.ActivityCreateUpdateWorkoutBinding
 import com.example.workmysets.databinding.ActivityMainBinding
@@ -37,12 +40,16 @@ import com.example.workmysets.ui.interfaces.ImplementBackButton
 import com.example.workmysets.utils.Consts
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.saadahmedev.popupdialog.PopupDialog
+import kotlinx.coroutines.launch
 
 class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
     private lateinit var binding: ActivityCreateUpdateWorkoutBinding
+
     private lateinit var exerciseViewModel: ExerciseViewModel
     private lateinit var workoutViewModel: WorkoutViewModel
+    private lateinit var scheduleViewModel: ScheduleViewModel
     private lateinit var adapter: ExerciseCheckboxAdapter
+
     private val exercises = mutableSetOf<Exercise>()
     private val selectedExercises = mutableSetOf<Exercise>()
 
@@ -59,6 +66,7 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
 
         exerciseViewModel = ViewModelProvider(this)[ExerciseViewModel::class.java]
         workoutViewModel = ViewModelProvider(this)[WorkoutViewModel::class.java]
+        scheduleViewModel = ViewModelProvider(this)[ScheduleViewModel::class.java]
 
         if (intent.hasExtra(Consts.ARG_WORKOUT_ID)) {
             binding.topBar.titleText.text = "Update Workout"
@@ -102,13 +110,13 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
                     .setHeading(getString(R.string.failed))
                     .setDescription(getString(R.string.workout_not_found))
                     .setActionButtonText(getString(R.string.okay))
-                    .build {
+                    .build({
                         val i = Intent(this, MainActivity::class.java).apply {
                             putExtra(Consts.ARG_REDIRECT_PAGE, 1)
                         }
                         startActivity(i)
                         finish()
-                    }
+                    })
                     .show()
             }
         }
@@ -149,29 +157,34 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
             return
         }
 
-        val workout = Workout(name, desc)
-
-        if (workoutId != -1L) {
-            workout.workoutId = workoutId
-            workoutViewModel.updateWorkoutWithExercises(workout, selectedExercises.toList())
-        } else {
-            workoutViewModel.insertWorkoutWithExercises(workout, selectedExercises.toList())
-        }
-
-        PopupDialog.getInstance(this)
-            .statusDialogBuilder()
-            .createSuccessDialog()
-            .setHeading(getString(R.string.success))
-            .setDescription(getString(R.string.workout_saved))
-            .setActionButtonText(getString(R.string.okay))
-            .build {
-                val i = Intent(this, MainActivity::class.java).apply {
-                    putExtra(Consts.ARG_REDIRECT_PAGE, 1)
-                }
-                startActivity(i)
-                finish()
+        lifecycleScope.launch {
+            var schedule = scheduleViewModel.getSchedule()
+            if (schedule == null) {
+                schedule = Schedule("Default Schedule")
+                scheduleViewModel.createSchedule(schedule)
             }
-            .show()
+
+            val workout = Workout(name, desc)
+            if (workoutId != -1L) workout.workoutId = workoutId
+
+            workoutViewModel.insertWorkoutWithExercises(workout, selectedExercises.toList())
+
+            PopupDialog.getInstance(this@CreateUpdateWorkoutActivity)
+                .statusDialogBuilder()
+                .createSuccessDialog()
+                .setHeading(getString(R.string.success))
+                .setDescription(getString(R.string.workout_saved))
+                .setActionButtonText(getString(R.string.okay))
+                .build {
+                    val i =
+                        Intent(this@CreateUpdateWorkoutActivity, MainActivity::class.java).apply {
+                            putExtra(Consts.ARG_REDIRECT_PAGE, 1)
+                        }
+                    startActivity(i)
+                    finish()
+                }
+                .show()
+        }
     }
 
     override fun triggerBackButton() {

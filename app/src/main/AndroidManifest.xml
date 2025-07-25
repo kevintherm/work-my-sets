@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkMySets">
         <activity
+            android:name=".activities.ConfigureScheduleActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CreateUpdateWorkoutActivity"
             android:exported="false" />
         <activity

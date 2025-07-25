@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "sessions")
 data class Session(
-    @ColumnInfo(name = "timestamp") val timestamp: String
+    val isActive: Boolean,
+    val startsAt: String,
+    val endsAt: String
 ){
     @PrimaryKey(autoGenerate = true) var sessionId: Long = 0
 }

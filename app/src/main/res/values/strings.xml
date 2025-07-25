@@ -60,4 +60,7 @@
     <string name="workout_not_found">Workout not found!</string>
     <string name="workout_saved">Workout saved!</string>
     <string name="please_select_at_least_1_exercise">Please select at least 1 exercise!</string>
+    <string name="weekly_progress">Weekly Progress</string>
+    <string name="assign_day">Assign day</string>
+    <string name="configuration_saved">Configuration Saved!</string>
 </resources>

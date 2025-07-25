@@ -17,16 +17,16 @@ interface WorkoutDao {
     @Insert
     suspend fun insert(workout: Workout): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCrossRef(crossRef: WorkoutExerciseCrossRef): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertManyCrossRef(crossRefs: List<WorkoutExerciseCrossRef>)
 
     @Delete
     suspend fun delete(workout: Workout)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(workout: Workout)
 
     @Transaction

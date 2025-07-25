@@ -7,9 +7,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.workmysets.data.dao.ExerciseDao
+import com.example.workmysets.data.dao.ScheduleDao
 import com.example.workmysets.data.dao.SessionDao
 import com.example.workmysets.data.dao.WorkoutDao
 import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.models.Schedule
 import com.example.workmysets.data.models.Session
 import com.example.workmysets.data.models.SessionWorkoutCrossRef
 import com.example.workmysets.data.models.Workout
@@ -20,10 +22,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [Session::class, Workout::class, Exercise::class, WorkoutExerciseCrossRef::class, SessionWorkoutCrossRef::class],
+    entities = [
+        Schedule::class,
+        Session::class,
+        Workout::class,
+        Exercise::class,
+        WorkoutExerciseCrossRef::class,
+        SessionWorkoutCrossRef::class,
+    ],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun scheduleDao(): ScheduleDao
     abstract fun exerciseDao(): ExerciseDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun SessionDao(): SessionDao
@@ -37,15 +47,15 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, "app_database"
                 )
-                .addCallback(object : Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            getDatabase(context).exerciseDao().insertAll(SampleData.exercises)
+                    .addCallback(object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                getDatabase(context).exerciseDao().insertAll(SampleData.exercises)
+                            }
                         }
-                    }
-                })
-                .build()
+                    })
+                    .build()
                 INSTANCE = instance
                 instance
             }

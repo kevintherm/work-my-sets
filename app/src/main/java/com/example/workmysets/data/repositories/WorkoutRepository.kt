@@ -12,6 +12,10 @@ class WorkoutRepository(private val workoutDao: WorkoutDao, private val exercise
     val allWorkouts: LiveData<List<WorkoutWithExercises>> =
         workoutDao.getAllWorkoutsWithExercises()
 
+    suspend fun update(workout: Workout) {
+        return workoutDao.update(workout)
+    }
+
     suspend fun insert(workout: Workout): Long {
         return workoutDao.insert(workout)
     }
