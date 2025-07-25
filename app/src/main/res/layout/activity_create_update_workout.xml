@@ -99,7 +99,8 @@
                                 android:id="@+id/searchExerciseInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Select exercises..." />
+                                android:hint="Select exercises..."
+                                android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <androidx.recyclerview.widget.RecyclerView

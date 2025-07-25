@@ -10,7 +10,7 @@ import com.example.workmysets.data.models.Workout
 import com.example.workmysets.data.models.WorkoutWithExercises
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
-class WorkoutAdapter: RecyclerView.Adapter<WorkoutAdapter.ViewHolder>() {
+class WorkoutAdapter(private val onWorkoutClick: (WorkoutWithExercises) -> Unit) : RecyclerView.Adapter<WorkoutAdapter.ViewHolder>() {
     val items = mutableListOf<WorkoutWithExercises>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,19 +26,22 @@ class WorkoutAdapter: RecyclerView.Adapter<WorkoutAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_workout_card, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_workout_card, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: WorkoutAdapter.ViewHolder, position: Int) {
         val item = items[position]
-        val workoutMastery = if (item.exercises.isNotEmpty()) {
-            0
-        } else 0
+        val workoutMastery = if (item.exercises.isNotEmpty()) 0 else 0
 
         holder.workoutNameText.text = item.workout.name
         holder.masteryProgressText.text = "$workoutMastery%"
         holder.masteryProgress.progress = workoutMastery
+
+        holder.itemView.setOnClickListener {
+            onWorkoutClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size

@@ -52,8 +52,8 @@ class ConfigureScheduleActivity : AppCompatActivity() {
         binding.topBar.actionButton.setImageResource(R.drawable.ic_save_as)
         binding.topBar.actionButton.setOnClickListener { lifecycleScope.launch { saveSchedule() } }
 
-        scheduleViewModel.scheduleWithWorkouts.observe(this) {
-            if (it == null) {
+        scheduleViewModel.scheduleWithWorkouts.observe(this) { scheduleWithWorkouts ->
+            if (scheduleWithWorkouts == null) {
                 val intent = Intent(this@ConfigureScheduleActivity, MainActivity::class.java)
                     .apply {
                         putExtra(Consts.ARG_REDIRECT_PAGE, 1)
@@ -63,18 +63,28 @@ class ConfigureScheduleActivity : AppCompatActivity() {
                 return@observe
             }
 
-            binding.scheduleProgress.progress = 0
-            binding.scheduleProgressText.text = "0%"
-            binding.scheduleNameText.text = it.schedule.name
+            binding.scheduleNameText.text = scheduleWithWorkouts.schedule.name
 
-            val dayFormatter = DateTimeFormatter.ofPattern("EEEE")
-            val day = LocalDate.now().format(dayFormatter)
-            binding.schedulePlanText.text = "$day - Pull Day"
+            val now = LocalDate.now()
+            val dayString = now.format(DateTimeFormatter.ofPattern("EEEE"))
+
+            val todaysWorkout = scheduleWithWorkouts.workouts
+                .filter { it.dayOfWeek == now.dayOfWeek.value }
+                .joinToString(", ") { it.name }
+
+            val text = if (todaysWorkout.isNotEmpty()) "$dayString - $todaysWorkout"
+            else "$dayString - No workouts for today!"
+
+            binding.schedulePlanText.text = text
 
             binding.scheduleCard.isClickable = false
             binding.scheduleCard.isFocusable = false
 
-            binding.nameInput.setText(it.schedule.name)
+            val weeklyProgress = ((now.dayOfWeek.value.toDouble() / 7) * 100).toInt()
+            binding.scheduleProgress.progress = weeklyProgress
+            binding.scheduleProgressText.text = "$weeklyProgress%"
+
+            binding.nameInput.setText(scheduleWithWorkouts.schedule.name)
 
             workoutAdapter = WorkoutConfigureAdapter()
             binding.workoutsRecycler.layoutManager = LinearLayoutManager(this)

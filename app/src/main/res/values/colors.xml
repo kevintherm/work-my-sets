@@ -16,4 +16,5 @@
     <color name="accent3">#69baa5</color>
     <color name="primaryLight">#DBD9FF</color>
     <color name="primaryLightSemi">#66DBD9FF</color>
+    <color name="danger">#f20d30</color>
 </resources>

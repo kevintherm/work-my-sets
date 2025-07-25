@@ -1,12 +1,14 @@
 package com.example.workmysets.fragments
 
+import android.app.Dialog
 import android.content.Intent
-import android.graphics.Bitmap.Config
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.style.TtsSpan.TextBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,14 +16,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.ConfigureScheduleActivity
 import com.example.workmysets.activities.CreateUpdateWorkoutActivity
+import com.example.workmysets.activities.MainActivity
 import com.example.workmysets.adapters.WorkoutAdapter
 import com.example.workmysets.data.models.ScheduleWithWorkouts
+import com.example.workmysets.data.models.WorkoutWithExercises
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentWorkoutsBinding
+import com.example.workmysets.ui.objects.Day
 import com.example.workmysets.utils.Consts
+import com.saadahmedev.popupdialog.PopupDialog
+import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.round
+
 
 class WorkoutsFragment : Fragment() {
     private var _binding: FragmentWorkoutsBinding? = null
@@ -53,32 +62,51 @@ class WorkoutsFragment : Fragment() {
 
         binding.topBarScheduleSection.titleText.text = "Schedules"
 
-        scheduleViewModel.scheduleWithWorkouts.observe(viewLifecycleOwner) {
-            if (it == null) {
+        scheduleViewModel.scheduleWithWorkouts.observe(viewLifecycleOwner) { scheduleWithWorkouts ->
+            if (scheduleWithWorkouts == null) {
                 binding.scheduleProgress.progress = 0
                 binding.scheduleProgressText.text = "0%"
                 binding.scheduleNameText.text = "Your Schedule"
                 binding.schedulePlanText.text = "Create a workout to configure your schedule..."
                 binding.scheduleCard.isClickable = false
                 binding.scheduleCard.isFocusable = false
-            } else {
-                binding.scheduleProgress.progress = 0
-                binding.scheduleProgressText.text = "0%"
-                binding.scheduleNameText.text = it.schedule.name
+                return@observe
+            }
 
-                val dayFormatter = DateTimeFormatter.ofPattern("EEEE")
-                val day = LocalDate.now().format(dayFormatter)
-                binding.schedulePlanText.text = "$day - Pull Day"
+            binding.scheduleNameText.text = scheduleWithWorkouts.schedule.name
 
-                binding.scheduleCard.isClickable = true
-                binding.scheduleCard.isFocusable = true
+            val now = LocalDate.now()
+            val dayString = now.format(DateTimeFormatter.ofPattern("EEEE"))
 
-                binding.scheduleCard.setOnClickListener{
-                    val intent = Intent(requireContext(), ConfigureScheduleActivity::class.java)
-                    startActivity(intent)
-                }
+            val todaysWorkout = scheduleWithWorkouts.workouts
+                .filter { it.dayOfWeek == now.dayOfWeek.value }
+                .joinToString(", ") { it.name }
+
+            val text = if (todaysWorkout.isNotEmpty()) "$dayString - $todaysWorkout"
+            else "$dayString - No workouts for today!"
+
+            binding.schedulePlanText.text = text
+
+            val weeklyProgress = ((now.dayOfWeek.value.toDouble() / 7) * 100).toInt()
+            binding.scheduleProgress.progress = weeklyProgress
+            binding.scheduleProgressText.text = "$weeklyProgress%"
+
+            binding.scheduleCard.isClickable = true
+            binding.scheduleCard.isFocusable = true
+
+            binding.scheduleCard.setOnClickListener {
+                val intent = Intent(requireContext(), ConfigureScheduleActivity::class.java)
+                startActivity(intent)
+
             }
         }
+    }
+
+    private val onClickEdit: (WorkoutWithExercises) -> Unit = { workoutWithExercises ->
+        val intent = Intent(requireContext(), CreateUpdateWorkoutActivity::class.java).apply {
+            putExtra(Consts.ARG_WORKOUT_ID, workoutWithExercises.workout.workoutId)
+        }
+        startActivity(intent)
     }
 
     private fun setupWorkoutsSection() {
@@ -91,18 +119,15 @@ class WorkoutsFragment : Fragment() {
             startActivity(intent)
         }
 
-        val workoutAdapter = WorkoutAdapter()
+        val workoutAdapter = WorkoutAdapter(onClickEdit)
         binding.workoutsRecycler.layoutManager = LinearLayoutManager(context)
         binding.workoutsRecycler.adapter = workoutAdapter
 
         workoutViewModel = ViewModelProvider(this)[WorkoutViewModel::class.java]
-
-        workoutViewModel.allWorkouts.observe(viewLifecycleOwner) { workouts ->
-            workoutAdapter.submitList(workouts)
-        }
+        workoutViewModel.allWorkouts.observe(viewLifecycleOwner) { workoutAdapter.submitList(it) }
 
         ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -115,20 +140,43 @@ class WorkoutsFragment : Fragment() {
                 val position = viewHolder.bindingAdapterPosition
                 val workout = workoutAdapter.items[position]
 
-                when (direction) {
-                    ItemTouchHelper.LEFT -> {
-                        val intent =
-                            Intent(context, CreateUpdateWorkoutActivity::class.java).apply {
-                                putExtra(Consts.ARG_WORKOUT_ID, workout.workout.workoutId)
-                            }
-                        startActivity(intent)
-                        workoutAdapter.notifyItemChanged(position) // Reset swipe
-                    }
+                PopupDialog.getInstance(context)
+                    .standardDialogBuilder()
+                    .createStandardDialog()
+                    .setHeading("Delete")
+                    .setDescription(
+                        "Are you sure to delete workout?" +
+                                " This action cannot be undone"
+                    )
+                    .setIcon(R.drawable.ic_question)
+                    .setIconColor(R.color.primary)
+                    .setNegativeButtonCornerRadius(16F)
+                    .setPositiveButtonCornerRadius(16F)
+                    .setPositiveButtonBackgroundColor(R.color.danger)
+                    .setPositiveButtonTextColor(R.color.white)
+                    .setPositiveButtonText(getString(R.string.confirm))
+                    .build(object : StandardDialogActionListener {
+                        override fun onPositiveButtonClicked(dialog: Dialog) {
+                            workoutViewModel.deleteWorkout(workout)
+                            dialog.dismiss()
 
-                    ItemTouchHelper.RIGHT -> {
-                        workoutViewModel.deleteWorkout(workout)
-                    }
-                }
+                            PopupDialog.getInstance(requireContext())
+                                .statusDialogBuilder()
+                                .createSuccessDialog()
+                                .setHeading(getString(R.string.success))
+                                .setDescription(getString(R.string.workout_deleted))
+                                .setActionButtonText(getString(R.string.okay))
+                                .build(Dialog::dismiss)
+                                .show()
+                        }
+
+                        override fun onNegativeButtonClicked(dialog: Dialog) {
+                            workoutAdapter.notifyItemChanged(position)
+                            dialog.dismiss()
+                        }
+                    })
+                    .show()
+
             }
         }).attachToRecyclerView(binding.workoutsRecycler)
     }

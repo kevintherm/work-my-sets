@@ -165,9 +165,12 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
             }
 
             val workout = Workout(name, desc)
-            if (workoutId != -1L) workout.workoutId = workoutId
-
-            workoutViewModel.insertWorkoutWithExercises(workout, selectedExercises.toList())
+            if (workoutId != -1L) {
+                workout.workoutId = workoutId
+                workoutViewModel.updateWorkoutWithExercises(workout, selectedExercises.toList())
+            } else {
+                workoutViewModel.insertWorkoutWithExercises(workout, selectedExercises.toList())
+            }
 
             PopupDialog.getInstance(this@CreateUpdateWorkoutActivity)
                 .statusDialogBuilder()
