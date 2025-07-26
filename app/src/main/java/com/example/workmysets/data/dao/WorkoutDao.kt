@@ -8,9 +8,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.data.models.WorkoutExerciseCrossRef
-import com.example.workmysets.data.models.WorkoutWithExercises
+import com.example.workmysets.data.entities.workout.entity.Workout
+import com.example.workmysets.data.entities.workout.relation.WorkoutExerciseCrossRef
+import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 
 @Dao
 interface WorkoutDao {

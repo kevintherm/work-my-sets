@@ -3,13 +3,10 @@ package com.example.workmysets.data.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
 import com.example.workmysets.data.database.AppDatabase
-import com.example.workmysets.data.models.Schedule
-import com.example.workmysets.data.models.ScheduleWithWorkouts
-import com.example.workmysets.data.repositories.ExerciseRepository
+import com.example.workmysets.data.entities.schedule.entity.Schedule
+import com.example.workmysets.data.entities.schedule.entity.ScheduleWithWorkouts
 import com.example.workmysets.data.repositories.ScheduleRepository
-import kotlinx.coroutines.launch
 
 class ScheduleViewModel(application: Application) : AndroidViewModel(application) {
 

@@ -1,6 +1,5 @@
-package com.example.workmysets.data.models
+package com.example.workmysets.data.entities.session.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

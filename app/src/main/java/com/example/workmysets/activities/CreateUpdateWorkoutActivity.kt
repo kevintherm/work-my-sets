@@ -3,42 +3,26 @@ package com.example.workmysets.activities
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.adapters.ExerciseCheckboxAdapter
-import com.example.workmysets.data.models.Exercise
-import com.example.workmysets.data.models.Schedule
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.data.repositories.ExerciseRepository
-import com.example.workmysets.data.repositories.WorkoutRepository
+import com.example.workmysets.data.entities.exercise.entity.Exercise
+import com.example.workmysets.data.entities.schedule.entity.Schedule
+import com.example.workmysets.data.entities.workout.entity.Workout
 import com.example.workmysets.data.viewmodels.ExerciseViewModel
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.ActivityCreateUpdateWorkoutBinding
-import com.example.workmysets.databinding.ActivityMainBinding
 import com.example.workmysets.ui.interfaces.ImplementBackButton
 import com.example.workmysets.utils.Consts
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.saadahmedev.popupdialog.PopupDialog
 import kotlinx.coroutines.launch
 
@@ -175,6 +159,7 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
             PopupDialog.getInstance(this@CreateUpdateWorkoutActivity)
                 .statusDialogBuilder()
                 .createSuccessDialog()
+                .setCancelable(false)
                 .setHeading(getString(R.string.success))
                 .setDescription(getString(R.string.workout_saved))
                 .setActionButtonText(getString(R.string.okay))

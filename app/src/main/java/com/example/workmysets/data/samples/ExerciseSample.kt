@@ -1,6 +1,6 @@
-package com.example.workmysets.data.sample
+package com.example.workmysets.data.samples
 
-import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.entities.exercise.entity.Exercise
 
 object SampleData {
     val exercises = listOf(

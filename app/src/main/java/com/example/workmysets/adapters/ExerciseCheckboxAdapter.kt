@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
-import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.entities.exercise.entity.Exercise
 
 class ExerciseCheckboxAdapter(
     private val exercises: MutableList<Exercise>,

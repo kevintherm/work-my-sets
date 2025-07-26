@@ -1,6 +1,5 @@
 package com.example.workmysets.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +8,8 @@ import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.ui.objects.Day
+import com.example.workmysets.data.entities.workout.entity.Workout
+import com.example.workmysets.data.objects.Day
 
 class WorkoutConfigureAdapter: RecyclerView.Adapter<WorkoutConfigureAdapter.ViewHolder>() {
     val items = mutableListOf<Workout>()

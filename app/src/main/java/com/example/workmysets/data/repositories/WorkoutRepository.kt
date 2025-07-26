@@ -3,10 +3,10 @@ package com.example.workmysets.data.repositories
 import androidx.lifecycle.LiveData
 import com.example.workmysets.data.dao.ExerciseDao
 import com.example.workmysets.data.dao.WorkoutDao
-import com.example.workmysets.data.models.Exercise
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.data.models.WorkoutExerciseCrossRef
-import com.example.workmysets.data.models.WorkoutWithExercises
+import com.example.workmysets.data.entities.exercise.entity.Exercise
+import com.example.workmysets.data.entities.workout.entity.Workout
+import com.example.workmysets.data.entities.workout.relation.WorkoutExerciseCrossRef
+import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 
 class WorkoutRepository(private val workoutDao: WorkoutDao, private val exerciseDao: ExerciseDao) {
     val allWorkouts: LiveData<List<WorkoutWithExercises>> =

@@ -3,8 +3,6 @@ package com.example.workmysets.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.style.TtsSpan.TextBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,20 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.ConfigureScheduleActivity
 import com.example.workmysets.activities.CreateUpdateWorkoutActivity
-import com.example.workmysets.activities.MainActivity
 import com.example.workmysets.adapters.WorkoutAdapter
-import com.example.workmysets.data.models.ScheduleWithWorkouts
-import com.example.workmysets.data.models.WorkoutWithExercises
+import com.example.workmysets.data.entities.schedule.entity.ScheduleWithWorkouts
+import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentWorkoutsBinding
-import com.example.workmysets.ui.objects.Day
 import com.example.workmysets.utils.Consts
 import com.saadahmedev.popupdialog.PopupDialog
 import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.math.round
 
 
 class WorkoutsFragment : Fragment() {
@@ -150,6 +145,7 @@ class WorkoutsFragment : Fragment() {
                     )
                     .setIcon(R.drawable.ic_question)
                     .setIconColor(R.color.primary)
+                    .setCancelable(false)
                     .setNegativeButtonCornerRadius(16F)
                     .setPositiveButtonCornerRadius(16F)
                     .setPositiveButtonBackgroundColor(R.color.danger)

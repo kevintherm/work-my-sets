@@ -1,4 +1,4 @@
-package com.example.workmysets.ui.objects
+package com.example.workmysets.data.objects
 
 data class Day(
     var key: Int,

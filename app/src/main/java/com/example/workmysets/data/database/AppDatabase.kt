@@ -1,22 +1,24 @@
 package com.example.workmysets.data.database
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.workmysets.data.converter.Converters
 import com.example.workmysets.data.dao.ExerciseDao
 import com.example.workmysets.data.dao.ScheduleDao
 import com.example.workmysets.data.dao.SessionDao
 import com.example.workmysets.data.dao.WorkoutDao
-import com.example.workmysets.data.models.Exercise
-import com.example.workmysets.data.models.Schedule
-import com.example.workmysets.data.models.Session
-import com.example.workmysets.data.models.SessionWorkoutCrossRef
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.data.models.WorkoutExerciseCrossRef
-import com.example.workmysets.data.sample.SampleData
+import com.example.workmysets.data.entities.exercise.entity.Exercise
+import com.example.workmysets.data.entities.schedule.entity.Schedule
+import com.example.workmysets.data.entities.session.entity.Session
+import com.example.workmysets.data.entities.session.entity.SessionExerciseLog
+import com.example.workmysets.data.entities.session.relation.SessionWorkoutCrossRef
+import com.example.workmysets.data.entities.workout.entity.Workout
+import com.example.workmysets.data.entities.workout.relation.WorkoutExerciseCrossRef
+import com.example.workmysets.data.samples.SampleData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
     entities = [
         Schedule::class,
         Session::class,
+        SessionExerciseLog::class,
         Workout::class,
         Exercise::class,
         WorkoutExerciseCrossRef::class,
@@ -32,6 +35,7 @@ import kotlinx.coroutines.launch
     ],
     version = 1
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDao
     abstract fun exerciseDao(): ExerciseDao

@@ -1,4 +1,4 @@
-package com.example.workmysets.data.models
+package com.example.workmysets.data.entities.schedule.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

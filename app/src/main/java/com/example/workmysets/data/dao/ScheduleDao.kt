@@ -7,8 +7,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.workmysets.data.models.Schedule
-import com.example.workmysets.data.models.ScheduleWithWorkouts
+import com.example.workmysets.data.entities.schedule.entity.Schedule
+import com.example.workmysets.data.entities.schedule.entity.ScheduleWithWorkouts
 
 @Dao
 interface ScheduleDao {

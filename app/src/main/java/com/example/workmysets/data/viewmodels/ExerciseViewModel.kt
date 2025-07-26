@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.workmysets.data.database.AppDatabase
-import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.repositories.ExerciseRepository
 import kotlinx.coroutines.launch
 

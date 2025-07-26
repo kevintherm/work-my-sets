@@ -7,7 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.workmysets.data.models.Exercise
+import com.example.workmysets.data.entities.exercise.entity.Exercise
 
 @Dao
 interface ExerciseDao {

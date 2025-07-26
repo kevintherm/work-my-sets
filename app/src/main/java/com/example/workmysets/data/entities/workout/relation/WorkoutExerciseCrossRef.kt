@@ -1,4 +1,4 @@
-package com.example.workmysets.data.models
+package com.example.workmysets.data.entities.workout.relation
 
 import androidx.room.Entity
 

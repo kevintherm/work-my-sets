@@ -1,9 +1,7 @@
 package com.example.workmysets.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.example.workmysets.data.dao.ScheduleDao
-import com.example.workmysets.data.models.Schedule
-import com.example.workmysets.data.models.ScheduleWithWorkouts
+import com.example.workmysets.data.entities.schedule.entity.Schedule
 
 class ScheduleRepository(private val dao: ScheduleDao) {
 

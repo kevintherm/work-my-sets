@@ -2,7 +2,6 @@ package com.example.workmysets.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,11 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.workmysets.R
 import com.example.workmysets.adapters.WorkoutConfigureAdapter
-import com.example.workmysets.data.models.Schedule
+import com.example.workmysets.data.entities.schedule.entity.Schedule
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.ActivityConfigureScheduleBinding
-import com.example.workmysets.databinding.ActivityCreateUpdateWorkoutBinding
 import com.example.workmysets.utils.Consts
 import com.saadahmedev.popupdialog.PopupDialog
 import kotlinx.coroutines.launch
@@ -51,6 +49,8 @@ class ConfigureScheduleActivity : AppCompatActivity() {
         binding.topBar.actionButton.visibility = View.VISIBLE
         binding.topBar.actionButton.setImageResource(R.drawable.ic_save_as)
         binding.topBar.actionButton.setOnClickListener { lifecycleScope.launch { saveSchedule() } }
+
+        binding.loadingOverlay.visibility = View.VISIBLE
 
         scheduleViewModel.scheduleWithWorkouts.observe(this) { scheduleWithWorkouts ->
             if (scheduleWithWorkouts == null) {
@@ -94,6 +94,7 @@ class ConfigureScheduleActivity : AppCompatActivity() {
                 workoutAdapter.submitList(scheduleWithWorkouts.workouts)
             }
 
+            binding.loadingOverlay.visibility = View.GONE
         }
     }
 

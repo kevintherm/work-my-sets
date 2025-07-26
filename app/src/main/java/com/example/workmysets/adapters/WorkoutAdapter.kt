@@ -6,8 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
-import com.example.workmysets.data.models.Workout
-import com.example.workmysets.data.models.WorkoutWithExercises
+import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
 class WorkoutAdapter(private val onWorkoutClick: (WorkoutWithExercises) -> Unit) : RecyclerView.Adapter<WorkoutAdapter.ViewHolder>() {

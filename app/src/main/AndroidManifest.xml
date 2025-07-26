@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkMySets">
         <activity
+            android:name=".activities.RealtimeExerciseActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ConfigureScheduleActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
@@ -20,7 +23,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".activities.LiveSessionActivity"
+            android:name=".activities.TrackSessionActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
