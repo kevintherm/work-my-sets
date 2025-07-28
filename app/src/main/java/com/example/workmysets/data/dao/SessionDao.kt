@@ -9,36 +9,18 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.workmysets.data.entities.session.entity.Session
-import com.example.workmysets.data.entities.session.entity.SessionExerciseLog
-import com.example.workmysets.data.entities.session.entity.SessionWithLogs
 import com.example.workmysets.data.entities.session.entity.SessionWithWorkouts
 
 @Dao
 interface SessionDao {
-    @Insert
-    suspend fun insert(session: Session): Long
-
-    @Update
-    suspend fun update(session: Session)
-
-    @Delete
-    suspend fun delete(session: Session)
-
-    @Transaction
-    @Query("SELECT * FROM sessions WHERE sessionId = :id")
-    fun getSessionWithWorkouts(id: Long): LiveData<MutableList<SessionWithWorkouts>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExerciseLog(log: SessionExerciseLog): Long
+    suspend fun insert(session: Session)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun update(session: Session)
 
     @Transaction
-    @Query("SELECT * FROM sessions WHERE sessionId = :sessionId")
-    fun getSessionWithLogs(sessionId: Long): LiveData<SessionWithLogs>
-
-    @Transaction
-    @Query("SELECT * FROM session_exercises_logs WHERE sessionId = :sessionId")
-    fun getExerciseLogsForSession(sessionId: Long): LiveData<List<SessionExerciseLog>>
-
-    @Query("SELECT * FROM sessions")
-    fun getSesions(): LiveData<List<Session>>
+    @Query("SELECT * FROM sessions WHERE workoutId = :workoutId")
+    fun getSessionByWorkoutId(workoutId: Long): LiveData<List<Session>>
 }

@@ -14,7 +14,6 @@ import com.example.workmysets.data.dao.WorkoutDao
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.entities.schedule.entity.Schedule
 import com.example.workmysets.data.entities.session.entity.Session
-import com.example.workmysets.data.entities.session.entity.SessionExerciseLog
 import com.example.workmysets.data.entities.session.relation.SessionWorkoutCrossRef
 import com.example.workmysets.data.entities.workout.entity.Workout
 import com.example.workmysets.data.entities.workout.relation.WorkoutExerciseCrossRef
@@ -27,7 +26,6 @@ import kotlinx.coroutines.launch
     entities = [
         Schedule::class,
         Session::class,
-        SessionExerciseLog::class,
         Workout::class,
         Exercise::class,
         WorkoutExerciseCrossRef::class,

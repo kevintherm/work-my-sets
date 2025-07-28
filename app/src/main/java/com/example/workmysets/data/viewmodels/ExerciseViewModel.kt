@@ -30,4 +30,8 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun findById(exerciseId: Long): LiveData<Exercise> {
+        return repository.findById(exerciseId)
+    }
+
 }

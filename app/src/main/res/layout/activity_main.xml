@@ -11,7 +11,7 @@
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomBar"
+        app:layout_constraintBottom_toTopOf="@+id/nextExerciseCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,12 +22,12 @@
         android:background="@color/mutedLight"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomBar"
+        app:layout_constraintBottom_toTopOf="@+id/nextExerciseCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <me.ibrahimsn.lib.SmoothBottomBar
-        android:id="@+id/bottomBar"
+        android:id="@+id/nextExerciseCard"
         style="@style/SmoothBottomBarStyle"
         android:layout_width="0dp"
         android:layout_height="70dp"

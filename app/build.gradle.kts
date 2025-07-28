@@ -43,6 +43,7 @@ android {
 dependencies {
     val roomVersion = "2.7.2"
 
+    implementation("com.google.code.gson:gson:2.13.1")
     implementation("com.saadahmedev.popup-dialog:popup-dialog:2.0.0")
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)

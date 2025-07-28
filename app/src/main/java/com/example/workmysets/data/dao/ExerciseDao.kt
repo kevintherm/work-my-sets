@@ -29,4 +29,7 @@ interface ExerciseDao {
 
     @Query("SELECT * FROM exercises WHERE name LIKE '%' || :search || '%'")
     fun searchExercises(search: String): LiveData<List<Exercise>>
+
+    @Query("SELECT * FROM exercises WHERE exerciseId = :exerciseId")
+    fun findById(exerciseId: Long): LiveData<Exercise>
 }

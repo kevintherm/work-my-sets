@@ -36,7 +36,7 @@ class WorkoutRepository(private val workoutDao: WorkoutDao, private val exercise
         return workoutDao.findByName(name)
     }
 
-    fun findById(id: Long): WorkoutWithExercises {
+    fun findById(id: Long): LiveData<WorkoutWithExercises> {
         return workoutDao.getWorkoutWithExercises(id)
     }
 

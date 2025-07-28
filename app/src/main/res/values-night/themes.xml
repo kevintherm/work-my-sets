@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="Base.Theme.WorkMySets" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="fontFamily">@font/poppins</item>
         <item name="android:fontFamily">@font/poppins</item>
@@ -36,6 +37,12 @@
     <style name="ThemeAwareColor">
         <item name="textColor">@color/bgLight</item>
         <item name="tint">@color/bgLight</item>
+    </style>
+
+    <style name="Widget.App.Button.OutlinedButton.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/secondary</item>
+        <item name="strokeColor">@color/secondary</item>
+        <item name="rippleColor">@color/secondaryLight</item>
     </style>
 
 </resources>

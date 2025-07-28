@@ -22,7 +22,6 @@ class HomeFragment : Fragment(), OnClickListener {
     private val binding get() = _binding!!
 
     private lateinit var scheduleViewModel: ScheduleViewModel
-//    private lateinit var sessionViewModel
 
     companion object {
         @JvmStatic
@@ -49,8 +48,6 @@ class HomeFragment : Fragment(), OnClickListener {
     private fun populateWidgets() {
         val now = LocalDate.now()
 
-
-
         // Schedule Progress Widget
         val weeklyProgress = ((now.dayOfWeek.value.toDouble() / 7) * 100).toInt()
         binding.scheduleProgress.progress = weeklyProgress
@@ -59,6 +56,17 @@ class HomeFragment : Fragment(), OnClickListener {
 
         // Schedule Stats
         scheduleViewModel.scheduleWithWorkouts.observe(requireActivity()) { scheduleWithWorkouts ->
+            if (scheduleWithWorkouts == null) {
+                binding.sessionProgressWidget.isClickable = false
+                binding.sessionProgressWidget.isFocusable = false
+                binding.currentScheduleText.text = "Unavailable"
+
+                return@observe
+            }
+
+            binding.sessionProgressWidget.isClickable = true
+            binding.sessionProgressWidget.isFocusable = true
+
             val currentWorkout = scheduleWithWorkouts.workouts // today's workout
                 .filter { it.dayOfWeek == now.dayOfWeek.value }
 

@@ -31,7 +31,7 @@ interface WorkoutDao {
 
     @Transaction
     @Query("SELECT * FROM workouts WHERE workoutId = :id LIMIT 1")
-    fun getWorkoutWithExercises(id: Long): WorkoutWithExercises
+    fun getWorkoutWithExercises(id: Long): LiveData<WorkoutWithExercises>
 
     @Transaction
     @Query("SELECT * FROM workouts")

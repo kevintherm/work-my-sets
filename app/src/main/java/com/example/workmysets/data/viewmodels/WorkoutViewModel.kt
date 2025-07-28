@@ -31,11 +31,8 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         repository.insertWorkoutWithExercises(workout, exercises)
     }
 
-    fun findById(id: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = repository.findById(id)
-            _selectedWorkout.postValue(result)
-        }
+    fun findById(id: Long): LiveData<WorkoutWithExercises>{
+        return repository.findById(id)
     }
 
     fun update(workout: Workout) = viewModelScope.launch {

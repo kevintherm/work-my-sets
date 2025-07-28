@@ -66,4 +66,18 @@
     <string name="confirm">Confirm</string>
     <string name="workout_deleted">Workout deleted.</string>
     <string name="start_session">Start Session</string>
+    <string name="start_exercise">Start %1$s?</string>
+    <string name="finish_exercise">Finish Exercise</string>
+    <string name="another_set">Another Set</string>
+    <string name="waiting_to_finish_set_default">Waiting to finish set...</string>
+    <string name="start_set_of">Start set %1$d of %2$s</string>
+    <string name="continue_set_of">Continue set %1$d of %2$s</string>
+    <string name="start">Start</string>
+    <string name="continue_string">Continue</string>
+    <string name="add_a_note">Add a note?</string>
+    <string name="add_a_note_about_this_session">Add a note about this session...</string>
+    <string name="guide">Guide</string>
+    <string name="next_exercise">Next: %1$s</string>
+    <string name="finish_workout">Finish workout</string>
+    <string name="set_x">Set %1$d</string>
 </resources>

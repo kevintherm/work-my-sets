@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), ImplementBackButton {
             insets
         }
 
-        bottomBar = findViewById(R.id.bottomBar)
+        bottomBar = findViewById(R.id.nextExerciseCard)
 
         if (intent.hasExtra(Consts.ARG_REDIRECT_PAGE)) {
             val page = intent.getIntExtra(Consts.ARG_REDIRECT_PAGE, 0)

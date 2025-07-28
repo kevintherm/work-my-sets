@@ -1,29 +1,29 @@
 package com.example.workmysets.activities
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.workmysets.R
 import com.example.workmysets.adapters.ExerciseTrackAdapter
 import com.example.workmysets.data.entities.exercise.entity.Exercise
-import com.example.workmysets.data.entities.schedule.entity.Schedule
+import com.example.workmysets.data.entities.workout.entity.Workout
 import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.SessionViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.ActivityTrackSessionBinding
 import com.example.workmysets.utils.Consts
-import kotlinx.coroutines.launch
+import com.saadahmedev.popupdialog.PopupDialog
+import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
 
 class TrackSessionActivity : AppCompatActivity(), OnClickListener {
     private lateinit var binding: ActivityTrackSessionBinding
@@ -65,43 +65,67 @@ class TrackSessionActivity : AppCompatActivity(), OnClickListener {
         binding.workoutsRecycler.adapter = exerciseTrackAdapter
         binding.workoutsRecycler.layoutManager = LinearLayoutManager(this)
 
-        workoutViewModel.selectedWorkout.observe(this) { workoutWithExercises ->
-            Log.d("WORKOUT VIEW MODEL OBSERVER", "data: $workoutWithExercises")
-            if (workoutWithExercises == null) {
-                Intent(this@TrackSessionActivity, MainActivity::class.java).also {
-                    startActivity(it)
-                    finish()
-                }
-                return@observe
-            }
-
-            workout = workoutWithExercises
-            exerciseTrackAdapter.updateList(workoutWithExercises.exercises)
-        }
-
         scheduleViewModel.scheduleWithWorkouts.observe(this) { scheduleWithWorkouts ->
-            Log.d("SCHEDULE VIEW MODEL OBSERVER", "data: $scheduleWithWorkouts")
             if (scheduleWithWorkouts == null || scheduleWithWorkouts.workouts.isEmpty()) {
-                Intent(this@TrackSessionActivity, MainActivity::class.java).also {
-                    startActivity(it)
-                    finish()
-                }
+                Toast.makeText(this@TrackSessionActivity, "Invalid schedule", Toast.LENGTH_SHORT)
+                    .show()
+                finish()
                 return@observe
             }
 
-            val firstWorkout = scheduleWithWorkouts.workouts[0]
-            workoutViewModel.findById(firstWorkout.workoutId)
-            binding.topBar.titleText.text = firstWorkout.name
+            val workoutFind = scheduleWithWorkouts.workouts[0]
+            binding.topBar.titleText.text = workoutFind.name
+
+            workoutViewModel.findById(workoutFind.workoutId).observe(this) {
+                if (it == null) {
+                    Toast.makeText(this@TrackSessionActivity, "Invalid workout", Toast.LENGTH_SHORT)
+                        .show()
+                    finish()
+                    return@observe
+                }
+
+                workout = it
+                exerciseTrackAdapter.updateList(it.exercises)
+            }
         }
 
     }
 
     private fun onClickPlayButton(exercise: Exercise) {
-        val intent = Intent(this, RealtimeExerciseActivity::class.java).apply {
+        val dialog = PopupDialog.getInstance(this)
+            .standardDialogBuilder()
+            .createStandardDialog()
+            .setHeading(exercise.name)
+            .setDescription(getString(R.string.start_exercise, exercise.name))
+            .setIcon(R.drawable.ic_question)
+            .setIconColor(R.color.primary)
+            .setCancelable(false)
+            .setNegativeButtonCornerRadius(16F)
+            .setPositiveButtonCornerRadius(16F)
+            .setPositiveButtonBackgroundColor(R.color.primary)
+            .setPositiveButtonTextColor(R.color.white)
+            .setPositiveButtonText(getString(R.string.confirm))
+            .build(object : StandardDialogActionListener {
+                override fun onPositiveButtonClicked(dialog: Dialog) {
+                    gotoTrackExerciseActivity(exercise)
+                    dialog.dismiss()
+                }
+
+                override fun onNegativeButtonClicked(dialog: Dialog) {
+                    dialog.dismiss()
+                }
+            })
+
+        dialog.show()
+    }
+
+    private fun gotoTrackExerciseActivity(exercise: Exercise) {
+        val intent = Intent(this, SessionExerciseActivity::class.java).apply {
             putExtra(Consts.ARG_EXERCISE_ID, exercise.exerciseId)
             putExtra(Consts.ARG_WORKOUT_ID, workout.workout.workoutId)
         }
         startActivity(intent)
+        finish()
     }
 
     override fun onClick(button: View?) {
