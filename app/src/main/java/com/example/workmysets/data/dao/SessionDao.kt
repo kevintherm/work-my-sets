@@ -9,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.workmysets.data.entities.session.entity.Session
+import com.example.workmysets.data.entities.session.entity.SessionWithExercise
 import com.example.workmysets.data.entities.session.entity.SessionWithWorkouts
 
 @Dao
@@ -22,5 +23,13 @@ interface SessionDao {
 
     @Transaction
     @Query("SELECT * FROM sessions WHERE workoutId = :workoutId")
-    fun getSessionByWorkoutId(workoutId: Long): LiveData<List<Session>>
+    fun getSessionByWorkoutId(workoutId: Long): LiveData<List<SessionWithExercise>>
+
+    @Transaction
+    @Query("SELECT * FROM sessions WHERE sessionId = :sessionId")
+    fun getSessionWithExercise(sessionId: Long): LiveData<SessionWithExercise>
+
+    @Transaction
+    @Query("SELECT * FROM sessions")
+    fun getAllSessionsWithExercise(): LiveData<List<SessionWithExercise>>
 }

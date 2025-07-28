@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.example.workmysets.data.objects.TimestampPair
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.Duration
 import java.time.Instant
 
 class Converters {
@@ -44,6 +45,27 @@ class Converters {
     fun toTimestampPairList(value: String): List<TimestampPair> {
         val type = object : TypeToken<List<TimestampPair>>() {}.type
         return Gson().fromJson(value, type)
+    }
+
+    companion object {
+        fun diffForHumans(timestamp: String): String {
+            val time = Instant.parse(timestamp)
+            val now = Instant.now()
+            val duration = Duration.between(time, now)
+
+            val seconds = duration.seconds
+
+            val minutes = seconds / 60
+            val hours = minutes / 60
+            val days = hours / 24
+
+            return when {
+                seconds < 60 -> "a moment ago"
+                minutes < 60 -> "$minutes minutes ago"
+                hours < 24 -> "$hours hours ago"
+                else -> "$days days ago"
+            }
+        }
     }
 
 }

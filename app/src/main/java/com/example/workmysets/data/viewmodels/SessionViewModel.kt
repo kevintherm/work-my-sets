@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.workmysets.data.database.AppDatabase
 import com.example.workmysets.data.entities.session.entity.Session
+import com.example.workmysets.data.entities.session.entity.SessionWithExercise
 import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 import com.example.workmysets.data.repositories.SessionRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,14 +18,15 @@ import java.time.Instant
 class SessionViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: SessionRepository
 
-    private var _allSessions = MutableLiveData<List<Session>>()
+    val allSessions: LiveData<List<SessionWithExercise>>
 
     init {
         val dao = AppDatabase.getDatabase(application).SessionDao()
         repository = SessionRepository(dao)
+        allSessions = repository.allSessions
     }
 
-    fun getSessionByWorkoutId(workoutId: Long): LiveData<List<Session>> {
+    fun getSessionByWorkoutId(workoutId: Long): LiveData<List<SessionWithExercise>> {
         return repository.getSessionByWorkoutId(workoutId)
     }
 

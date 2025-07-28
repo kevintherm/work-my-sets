@@ -3,6 +3,8 @@ package com.example.workmysets.data.entities.session.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.workmysets.data.objects.TimestampPair
+import java.time.Duration
+import java.time.Instant
 
 @Entity(tableName = "sessions")
 data class Session(
