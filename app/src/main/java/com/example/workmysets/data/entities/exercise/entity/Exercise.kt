@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class Exercise(
     val name: String,
     val targetMuscle: String,
-    val calorieBurned: Double
+    val calorieBurned: Double,
+    val youtubeVideoId: String? = null
 ) {
     @PrimaryKey(autoGenerate = true)
     var exerciseId: Long = 0

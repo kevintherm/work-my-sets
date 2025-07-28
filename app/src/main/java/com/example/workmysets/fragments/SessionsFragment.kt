@@ -49,7 +49,7 @@ class SessionsFragment : Fragment() {
         sessionAdapter = SessionAdapter()
 
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { allSessionsWithExercise ->
-            sessionAdapter.updateList(allSessionsWithExercise)
+            sessionAdapter.updateList(allSessionsWithExercise.reversed())
         }
 
         binding.sessionsRecycler.layoutManager = LinearLayoutManager(requireActivity())

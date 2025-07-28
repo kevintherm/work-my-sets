@@ -66,26 +66,27 @@ class TrackSessionActivity : AppCompatActivity(), OnClickListener {
         binding.workoutsRecycler.layoutManager = LinearLayoutManager(this)
 
         scheduleViewModel.scheduleWithWorkouts.observe(this) { scheduleWithWorkouts ->
-            if (scheduleWithWorkouts == null || scheduleWithWorkouts.workouts.isEmpty()) {
-                Toast.makeText(this@TrackSessionActivity, "Invalid schedule", Toast.LENGTH_SHORT)
-                    .show()
+            val workoutSummary = scheduleWithWorkouts?.workouts?.firstOrNull()
+            if (workoutSummary == null) {
+                Toast.makeText(this, "Invalid schedule", Toast.LENGTH_SHORT).show()
                 finish()
                 return@observe
             }
 
-            val workoutFind = scheduleWithWorkouts.workouts[0]
-            binding.topBar.titleText.text = workoutFind.name
+            binding.topBar.titleText.text = workoutSummary.name
 
-            workoutViewModel.findById(workoutFind.workoutId).observe(this) {
-                if (it == null) {
-                    Toast.makeText(this@TrackSessionActivity, "Invalid workout", Toast.LENGTH_SHORT)
-                        .show()
+            val workoutLiveData = workoutViewModel.findById(workoutSummary.workoutId)
+            workoutLiveData.observe(this) { foundWorkout ->
+                if (foundWorkout == null) {
+                    Toast.makeText(this, "Invalid workout", Toast.LENGTH_SHORT).show()
                     finish()
                     return@observe
                 }
 
-                workout = it
-                exerciseTrackAdapter.updateList(it.exercises)
+                workout = foundWorkout
+                exerciseTrackAdapter.updateList(foundWorkout.exercises)
+
+                workoutLiveData.removeObservers(this)
             }
         }
 

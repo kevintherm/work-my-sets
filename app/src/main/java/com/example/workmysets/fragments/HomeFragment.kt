@@ -13,7 +13,10 @@ import androidx.room.util.findColumnIndexBySuffix
 import com.example.workmysets.R
 import com.example.workmysets.activities.TrackSessionActivity
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
+import com.example.workmysets.data.viewmodels.SessionViewModel
 import com.example.workmysets.databinding.FragmentHomeBinding
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 
 class HomeFragment : Fragment(), OnClickListener {
@@ -22,6 +25,7 @@ class HomeFragment : Fragment(), OnClickListener {
     private val binding get() = _binding!!
 
     private lateinit var scheduleViewModel: ScheduleViewModel
+    private lateinit var sessionViewModel: SessionViewModel
 
     companion object {
         @JvmStatic
@@ -39,6 +43,7 @@ class HomeFragment : Fragment(), OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         scheduleViewModel = ViewModelProvider(requireActivity())[ScheduleViewModel::class]
+        sessionViewModel = ViewModelProvider(requireActivity())[SessionViewModel::class]
 
         populateWidgets()
 
@@ -53,6 +58,32 @@ class HomeFragment : Fragment(), OnClickListener {
         binding.scheduleProgress.progress = weeklyProgress
         binding.scheduleProgressText.text = "$weeklyProgress%"
         binding.scheduleProgressSubtext.text = "${100 - weeklyProgress}% left to go!"
+
+        // Session Stats
+        sessionViewModel.allSessions.observe(requireActivity()) { sessionsWithExercise ->
+            var totalMinutes = 0L
+            var totalSets = 0
+
+            sessionsWithExercise
+                .filter { it.session.isCompleted }
+                .forEach { sessionWE ->
+                    try {
+                        val start = Instant.parse(sessionWE.session.startsAt)
+                        val end = Instant.parse(sessionWE.session.endsAt)
+                        totalMinutes += Duration.between(start, end).toMinutes()
+                    } catch (_: Exception) {
+
+                    }
+
+                    // Use repsPerSet (or any other per-set list) to count sets
+                    totalSets += sessionWE.session.repsPerSet.size
+                }
+
+            val totalHours = totalMinutes.toDouble() / 60
+
+            binding.hoursSpentText.text = String.format("%.2f", totalHours)
+            binding.setsDoneText.text = totalSets.toString()
+        }
 
         // Schedule Stats
         scheduleViewModel.scheduleWithWorkouts.observe(requireActivity()) { scheduleWithWorkouts ->

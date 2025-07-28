@@ -5,12 +5,18 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
+import android.webkit.WebChromeClient
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -128,6 +134,53 @@ class SessionExerciseActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        b.guideVideoWebView.saveState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        b.guideVideoWebView.restoreState(savedInstanceState)
+    }
+
+    private inner class CustomChromeClient : WebChromeClient() {
+        private var mCustomView: View? = null
+        private var mCustomViewCallback: CustomViewCallback? = null
+        private var mOriginalOrientation = 0
+        private var mOriginalSystemUiVisibility = 0
+        override fun getDefaultVideoPoster(): Bitmap? {
+            return if (mCustomView == null) {
+                null
+            } else BitmapFactory.decodeResource(applicationContext.resources, 2130837573)
+        }
+
+        override fun onHideCustomView() {
+            (window.decorView as FrameLayout).removeView(mCustomView)
+            mCustomView = null
+            window.decorView.systemUiVisibility = mOriginalSystemUiVisibility
+            requestedOrientation = mOriginalOrientation
+            mCustomViewCallback!!.onCustomViewHidden()
+            mCustomViewCallback = null
+        }
+
+        override fun onShowCustomView(
+            paramView: View?,
+            paramCustomViewCallback: CustomViewCallback?
+        ) {
+            if (mCustomView != null) {
+                onHideCustomView()
+                return
+            }
+            mCustomView = paramView
+            mOriginalSystemUiVisibility = window.decorView.systemUiVisibility
+            mOriginalOrientation = requestedOrientation
+            mCustomViewCallback = paramCustomViewCallback
+            (window.decorView as FrameLayout).addView(mCustomView, FrameLayout.LayoutParams(-1, -1))
+            window.decorView.systemUiVisibility = 3846 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -144,24 +197,61 @@ class SessionExerciseActivity : AppCompatActivity() {
         exerciseViewModel = ViewModelProvider(this)[ExerciseViewModel::class]
 
         val workoutId = intent.getLongExtra(Consts.ARG_WORKOUT_ID, -1)
-        val exerciseId = intent.getLongExtra(Consts.ARG_WORKOUT_ID, -1)
+        val exerciseId = intent.getLongExtra(Consts.ARG_EXERCISE_ID, -1)
 
         if (workoutId == -1L || exerciseId == -1L) {
             Toast.makeText(this, "Invalid workout or exercise.", Toast.LENGTH_LONG).show()
             finish()
         }
 
-        workoutViewModel.findById(workoutId).observe(this) {
-            workoutWithExercises = it
-            b.topBar.titleText.text = workoutWithExercises.workout.name
-        }
+        workoutViewModel.findById(workoutId).observe(this) { workoutWithExercises = it }
 
-        exerciseViewModel.findById(exerciseId).observe(this) { exercise = it }
+        exerciseViewModel.findById(exerciseId).observe(this) {
+            exercise = it
+            b.topBar.titleText.text = exercise.name
+            if (it.youtubeVideoId != null && it.youtubeVideoId!!.isNotEmpty() && savedInstanceState == null) {
+                b.guideVideoWebView.webViewClient = WebViewClient()
+                b.guideVideoWebView.webChromeClient = WebChromeClient()
+                val webSettings = b.guideVideoWebView.settings
+                webSettings.javaScriptEnabled = true
+                webSettings.allowFileAccess = true
+                b.guideVideoWebView.settings.blockNetworkLoads = false
+                b.guideVideoWebView.loadUrl("https://www.youtube.com/embed/${it.youtubeVideoId}")
+                b.guideCard.fadeIn()
+            }
+        }
 
         session = Session(workoutId, exerciseId)
         session.startsAt = Instant.now().toString()
 
         CURRENT_STEP.observe(this, this::onLifecycleChange)
+
+        onBackPressedDispatcher.addCallback {
+            if (isTimerRunning) handleToggleTimerButton()
+
+            PopupDialog.getInstance(this@SessionExerciseActivity)
+                .standardDialogBuilder()
+                .createStandardDialog()
+                .setHeading("Cancel session?")
+                .setDescription("Are you sure you want to cancel this session? Your progress will be lost.")
+                .setIcon(R.drawable.ic_question)
+                .setIconColor(R.color.primary)
+                .setCancelable(true)
+                .setNegativeButtonText("No")
+                .setPositiveButtonText("Yes, Cancel")
+                .setPositiveButtonBackgroundColor(R.color.primary)
+                .setPositiveButtonTextColor(R.color.white)
+                .build(object : StandardDialogActionListener {
+                    override fun onPositiveButtonClicked(dialog: Dialog) {
+                        dialog.dismiss()
+                        finish() // exit the activity
+                    }
+
+                    override fun onNegativeButtonClicked(dialog: Dialog) {
+                        dialog.dismiss() // do nothing
+                    }
+                }).show()
+        }
     }
 
     private fun handleToggleTimerButton() {
@@ -320,7 +410,8 @@ class SessionExerciseActivity : AppCompatActivity() {
 
                 b.noteCard.fadeIn()
 
-                val currentIndex = workoutWithExercises.exercises.indexOf(exercise)
+                val currentIndex =
+                    workoutWithExercises.exercises.indexOfFirst { it.exerciseId == exercise.exerciseId }
                 val nextExercise = workoutWithExercises.exercises.getOrNull(currentIndex + 1)
 
                 if (nextExercise != null) {
@@ -347,7 +438,7 @@ class SessionExerciseActivity : AppCompatActivity() {
 
                 b.noteCard.fadeOut()
 
-                b.numberPickerText.text = "Choose "
+                b.numberPickerText.text = "Choose rest time (s)"
                 b.actionCardTitle.text = "Next set: $setCount"
 
                 val min = 0
@@ -388,6 +479,14 @@ class SessionExerciseActivity : AppCompatActivity() {
                     val endTime = SystemClock.elapsedRealtime() + (values.getOrNull(numIndex)
                         ?.toLong() ?: 1L) * 1000
                     b.chronometer.base = endTime
+
+                    while (restPerSet.size < setCount) {
+                        restPerSet.add(0)
+                    }
+
+                    restPerSet[setCount - 1] = values.getOrNull(numIndex)
+                        ?.toInt() ?: 1
+
                     b.chronometer.setOnChronometerTickListener {
                         val timeLeft = b.chronometer.base - SystemClock.elapsedRealtime()
                         if (timeLeft <= 0) {
@@ -414,18 +513,20 @@ class SessionExerciseActivity : AppCompatActivity() {
                 session.repsPerSet = repsPerSet
                 session.weightsPerSet = weightsPerSet
                 session.setsTimestamp = setsTimestamp
+                session.restsPerSet = restPerSet
                 session.notes = b.noteInput.text.toString()
                 session.isCompleted = true
                 sessionViewModel.insert(session)
 
-                val currentIndex = workoutWithExercises.exercises.indexOf(exercise)
+                val currentIndex =
+                    workoutWithExercises.exercises.indexOfFirst { it.exerciseId == exercise.exerciseId }
                 val nextExercise = workoutWithExercises.exercises.getOrNull(currentIndex + 1)
                 if (nextExercise != null) {
                     PopupDialog.getInstance(this)
                         .standardDialogBuilder()
                         .createStandardDialog()
                         .setHeading("Next exercise?")
-                        .setDescription(getString(R.string.start_exercise, exercise.name))
+                        .setDescription(getString(R.string.start_exercise, nextExercise.name))
                         .setIcon(R.drawable.ic_question)
                         .setIconColor(R.color.primary)
                         .setCancelable(false)
@@ -441,7 +542,10 @@ class SessionExerciseActivity : AppCompatActivity() {
                                     this@SessionExerciseActivity,
                                     SessionExerciseActivity::class.java
                                 ).apply {
-                                    putExtra(Consts.ARG_EXERCISE_ID, exercise.exerciseId)
+                                    putExtra(
+                                        Consts.ARG_EXERCISE_ID,
+                                        nextExercise.exerciseId
+                                    )
                                     putExtra(
                                         Consts.ARG_WORKOUT_ID,
                                         workoutWithExercises.workout.workoutId
@@ -476,5 +580,6 @@ class SessionExerciseActivity : AppCompatActivity() {
             }
         }
     }
+
 
 }

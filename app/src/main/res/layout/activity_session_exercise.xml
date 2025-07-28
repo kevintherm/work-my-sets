@@ -226,7 +226,7 @@
                 android:id="@+id/guideCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
+                android:layout_marginBottom="120dp"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
                 app:cardCornerRadius="16dp"
@@ -235,7 +235,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="280dp"
                     android:orientation="vertical"
                     android:padding="16dp">
 
@@ -251,10 +251,15 @@
                         app:drawableEndCompat="@drawable/ic_info"
                         app:drawableTint="@color/primary" />
 
-                    <ImageView
+                    <WebView
+                        android:id="@+id/guideVideoWebView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/test_bench_press" />
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </LinearLayout>
 
