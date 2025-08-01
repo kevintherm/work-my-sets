@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,6 +24,7 @@ import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.ActivityCreateUpdateWorkoutBinding
 import com.example.workmysets.ui.interfaces.ImplementBackButton
 import com.example.workmysets.utils.Consts
+import com.example.workmysets.utils.ErrorToast
 import com.saadahmedev.popupdialog.PopupDialog
 import kotlinx.coroutines.launch
 
@@ -54,7 +56,6 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
 
         if (intent.hasExtra(Consts.ARG_WORKOUT_ID)) {
             binding.topBar.titleText.text = "Update Workout"
-            workoutViewModel.findById(intent.getLongExtra(Consts.ARG_WORKOUT_ID, -1))
         } else {
             binding.topBar.titleText.text = "Create Workout"
         }
@@ -80,28 +81,14 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
             adapter.updateData(filtered)
         }
 
-        workoutViewModel.selectedWorkout.observe(this) { workoutWithExercises ->
+        workoutViewModel.findById(intent.getLongExtra(Consts.ARG_WORKOUT_ID, -1)).observe(this) { workoutWithExercises ->
+            binding.loading.visibility = View.GONE
             if (workoutWithExercises != null) {
                 binding.nameInput.setText(workoutWithExercises.workout.name)
                 binding.descriptionInput.setText(workoutWithExercises.workout.description)
                 selectedExercises.clear()
                 selectedExercises.addAll(workoutWithExercises.exercises)
                 adapter.notifyDataSetChanged()
-            } else {
-                PopupDialog.getInstance(this)
-                    .statusDialogBuilder()
-                    .createErrorDialog()
-                    .setHeading(getString(R.string.failed))
-                    .setDescription(getString(R.string.workout_not_found))
-                    .setActionButtonText(getString(R.string.okay))
-                    .build({
-                        val i = Intent(this, MainActivity::class.java).apply {
-                            putExtra(Consts.ARG_REDIRECT_PAGE, 1)
-                        }
-                        startActivity(i)
-                        finish()
-                    })
-                    .show()
             }
         }
 

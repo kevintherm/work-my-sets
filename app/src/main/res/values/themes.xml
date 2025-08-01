@@ -46,5 +46,4 @@
         <item name="strokeColor">@color/secondary</item>
         <item name="rippleColor">@color/secondaryLight</item>
     </style>
-
 </resources>

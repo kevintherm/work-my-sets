@@ -30,6 +30,6 @@ interface SessionDao {
     fun getSessionWithExercise(sessionId: Long): LiveData<SessionWithExercise>
 
     @Transaction
-    @Query("SELECT * FROM sessions")
+    @Query("SELECT * FROM sessions ORDER BY sessionId DESC")
     fun getAllSessionsWithExercise(): LiveData<List<SessionWithExercise>>
 }
