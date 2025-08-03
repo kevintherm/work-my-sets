@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkMySets">
+        <activity
+            android:name=".activities.SessionDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SessionDetail"
+            android:exported="false" />
         <activity
             android:name=".activities.SessionExerciseActivity"
             android:exported="false" />

@@ -1,20 +1,26 @@
 package com.example.workmysets.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
-import com.example.workmysets.adapters.SessionAdapter
+import com.example.workmysets.activities.SessionDetailActivity
+import com.example.workmysets.data.converter.Converters
 import com.example.workmysets.data.entities.session.entity.SessionWithExercise
 import com.example.workmysets.data.viewmodels.SessionViewModel
 import com.example.workmysets.data.viewmodels.SessionsFragmentSharedViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentSessionsBinding
+import com.example.workmysets.utils.Consts
 import com.google.android.material.chip.Chip
 import java.time.Instant
 import java.time.LocalDate
@@ -60,7 +66,8 @@ class SessionsFragment : Fragment() {
 
     private fun initializeViewModels() {
         sessionViewModel = ViewModelProvider(requireActivity())[SessionViewModel::class.java]
-        sharedViewModel = ViewModelProvider(requireActivity())[SessionsFragmentSharedViewModel::class.java]
+        sharedViewModel =
+            ViewModelProvider(requireActivity())[SessionsFragmentSharedViewModel::class.java]
         workoutViewModel = ViewModelProvider(requireActivity())[WorkoutViewModel::class.java]
     }
 
@@ -70,6 +77,14 @@ class SessionsFragment : Fragment() {
         binding.sessionsRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = sessionAdapter
+        }
+
+        sessionAdapter.onClickItem = { sessionWithExercise ->
+            Intent(requireActivity(), SessionDetailActivity::class.java).apply {
+                putExtra(Consts.ARG_SESSION_ID, sessionWithExercise.session.sessionId)
+            }.also {
+                startActivity(it)
+            }
         }
     }
 
@@ -180,5 +195,57 @@ class SessionsFragment : Fragment() {
                 }
             }.also { binding.activeFiltersGroup.addView(it) }
         }
+    }
+}
+
+class SessionAdapter : RecyclerView.Adapter<SessionAdapter.ViewHolder>() {
+    val items = mutableListOf<SessionWithExercise>()
+    lateinit var onClickItem: (SessionWithExercise) -> Unit
+
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val exerciseName: TextView = view.findViewById(R.id.exerciseName)
+        val createdAt: TextView = view.findViewById(R.id.createdAt)
+        val totalSets: TextView = view.findViewById(R.id.totalSets)
+        val isCompleted: TextView = view.findViewById(R.id.isCompleted)
+        val sideImage: ImageView = view.findViewById(R.id.sideImage)
+
+        fun bind(item: SessionWithExercise) {
+            view.setOnClickListener {
+                onClickItem(item)
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view =
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_session_recycler, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items[position]
+
+        holder.exerciseName.text = item.exercise.name
+        holder.createdAt.text = Converters.diffForHumans(item.session.startsAt)
+        holder.totalSets.text = item.session.repsPerSet.size.toString() + " Total sets"
+        holder.isCompleted.text = if (item.session.isCompleted) "Completed" else "Abandoned"
+
+        val imageIds = listOf(
+            R.drawable.img_fitness_1,
+            R.drawable.img_fitness_2,
+            R.drawable.img_fitness_3
+        )
+        holder.sideImage.setImageResource(imageIds.random())
+
+        holder.bind(item)
+    }
+
+    fun updateList(newList: List<SessionWithExercise>) {
+        items.clear()
+        items.addAll(newList)
+        notifyDataSetChanged()
     }
 }
