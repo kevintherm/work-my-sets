@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.SessionExerciseActivity
+import com.example.workmysets.adapters.StreakWidgetManager
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.SessionViewModel
@@ -94,6 +94,17 @@ class HomeFragment : Fragment() {
                 exerciseAdapter.updateList(foundWorkout.exercises)
 
                 workoutLiveData.removeObservers(viewLifecycleOwner)
+            }
+        }
+
+        val streakWidgetManager = StreakWidgetManager(
+            requireContext(),
+            binding.streakWidget
+        )
+
+        workoutViewModel.allWorkouts.observe(viewLifecycleOwner){ workouts ->
+            sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
+                streakWidgetManager.updateWidget(workouts.map { it.workout }, sessions.map { it.session })
             }
         }
 

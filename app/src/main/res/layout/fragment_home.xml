@@ -73,74 +73,9 @@
 
             </LinearLayout>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/mainWidgetCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="#758BFD"
-                app:cardCornerRadius="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/mainWidgetTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="9"
-                            android:text="Sleep Quality"
-                            android:textColor="@color/white" />
-
-                        <ImageButton
-                            android:id="@+id/mainWidgetButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/white_circle_bg"
-                            android:foreground="@drawable/circle_ripple"
-                            android:src="@drawable/ic_chevron_right"
-                            app:tint="@color/bgDark" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/mainWidgetSubText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Your sleep quality is"
-                        android:textColor="@color/bgLight"
-                        android:textSize="12sp"
-                        android:textStyle="normal" />
-
-                    <TextView
-                        android:id="@+id/mainWidgetValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Good"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/mainWidgetBottomText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="You slept for a whole 7 hour and 32 min."
-                        android:textColor="@color/bgLight"
-                        android:textSize="12sp"
-                        android:textStyle="normal" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+            <include
+                android:id="@+id/streakWidget"
+                layout="@layout/streak_component" />
 
             <TextView
                 android:id="@+id/motivationText"
@@ -374,18 +309,17 @@
                     android:layout_marginTop="16dp"
                     android:text="Hooray! No exercise for today!"
                     android:textAppearance="?attr/textAppearanceBody1"
-                    android:visibility="gone"
-                    android:textSize="12sp"
                     android:textColor="@color/secondary"
-                    />
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/dailySessionsRecycler"
                     android:layout_width="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/home_exercise_card_recycler" />
 
             </LinearLayout>
