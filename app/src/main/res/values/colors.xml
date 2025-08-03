@@ -11,8 +11,12 @@
     <color name="mutedLight">#215A5A5A</color>
     <color name="mutedDark">#645C71</color>
     <color name="accentDark">#2C2C2E</color>
-    <color name="accent1">#ff8e6b</color>
-    <color name="accent2">#ef4ad4</color>
+    <color name="accent1">#FF9800</color>
+    <color name="accent1Light">#FFE0B2</color>
+    <color name="accent1Semi">#FFF3E0</color>
+    <color name="accent2">#EF4AD4</color>
+    <color name="accent2Light">#F8BFF0</color> <!-- lighter version -->
+    <color name="accent2Semi">#FDE5F8</color> <!-- even lighter (semi) -->
     <color name="accent3">#69baa5</color>
     <color name="primaryLight">#DBD9FF</color>
     <color name="primaryLightSemi">#66DBD9FF</color>
