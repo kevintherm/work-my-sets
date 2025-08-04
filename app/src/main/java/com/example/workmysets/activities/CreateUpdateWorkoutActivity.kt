@@ -100,6 +100,7 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
 
     private fun saveWorkout() {
         val workoutId = intent.getLongExtra(Consts.ARG_WORKOUT_ID, -1)
+        val workoutDayOfWeek = intent.getIntExtra(Consts.ARG_DAY_OF_WEEK, -1)
 
         val name = binding.nameInput.text.toString()
         val desc = binding.descriptionInput.text.toString()
@@ -138,6 +139,7 @@ class CreateUpdateWorkoutActivity : AppCompatActivity(), ImplementBackButton {
             val workout = Workout(name, desc)
             if (workoutId != -1L) {
                 workout.workoutId = workoutId
+                workout.dayOfWeek = workoutDayOfWeek
                 workoutViewModel.updateWorkoutWithExercises(workout, selectedExercises.toList())
             } else {
                 workoutViewModel.insertWorkoutWithExercises(workout, selectedExercises.toList())

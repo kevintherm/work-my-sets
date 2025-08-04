@@ -59,9 +59,16 @@ class SessionDetailActivity : AppCompatActivity() {
                 binding.topBar.actionButton.setImageDrawable(getDrawable(R.drawable.ic_session))
 
                 binding.totalSets.text = find.session.repsPerSet.size.toString()
-                binding.repsPerSet.text = find.session.repsPerSet.toString()
-                binding.weightsPerSet.text = find.session.weightsPerSet.map { it.toString().plus(" Kg") }.joinToString(", ")
-                binding.avgRest.text = find.session.restsPerSet.takeIf { it.isNotEmpty() }?.average()?.let { "$it min" } ?: "0.0 min"
+
+                val combinedDetails = find.session.repsPerSet.zip(find.session.weightsPerSet).joinToString("\n") {
+                    "${it.first} Rep(s) using ${it.second} Kg"
+                }
+
+                binding.setDetails.text = combinedDetails
+
+                binding.avgRest.text =
+                    find.session.restsPerSet.takeIf { it.isNotEmpty() }?.average()
+                        ?.let { "$it min" } ?: "0.0 min"
 
                 val start = Instant.parse(find.session.startsAt)
                 val end = Instant.parse(find.session.endsAt)

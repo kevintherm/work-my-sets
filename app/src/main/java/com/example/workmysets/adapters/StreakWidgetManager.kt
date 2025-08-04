@@ -35,9 +35,6 @@ class StreakWidgetManager(
 
         val streakInfo = calculateStreak(completedSessions, allWorkouts)
 
-//        binding.checksBackground.visibility =
-//            if (streakInfo.streakDays > 0) View.VISIBLE else View.INVISIBLE
-
         updateStreakCountAndMessage(streakInfo)
         updateWeeklyDayIndicators(allWorkouts, completedSessions, streakInfo)
         updateMainImageAndFireIcon(streakInfo)
@@ -147,7 +144,7 @@ class StreakWidgetManager(
 
             val drawableId = when {
                 isCompleted -> R.drawable.ic_check
-                canContinueStreakOnRestDay -> R.drawable.ic_circle
+                canContinueStreakOnRestDay -> R.drawable.ic_moon
                 isScheduled -> R.drawable.ic_circle
                 else -> R.drawable.ic_moon
             }
@@ -166,6 +163,5 @@ class StreakWidgetManager(
         updateStreakCountAndMessage(streakInfo)
         updateWeeklyDayIndicators(allWorkouts, emptyList(), streakInfo)
         updateMainImageAndFireIcon(streakInfo)
-//        binding.checksBackground.visibility = View.INVISIBLE
     }
 }

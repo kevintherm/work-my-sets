@@ -13,16 +13,21 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.SessionExerciseActivity
+import com.example.workmysets.activities.WidgetsActivity
 import com.example.workmysets.adapters.StreakWidgetManager
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.SessionViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentHomeBinding
+import com.example.workmysets.utils.AppLocale
 import com.example.workmysets.utils.Consts
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.Entry
@@ -78,23 +83,43 @@ class HomeFragment : Fragment() {
 
             if (todayWorkout == null) {
                 binding.emptyMessage.visibility = View.VISIBLE
+                binding.emptyMessage.text = "Hooray! No exercise for today!"
                 return@observe
             } else {
                 binding.emptyMessage.visibility = View.GONE
             }
 
             val workoutLiveData = workoutViewModel.findById(todayWorkout.workoutId)
-            workoutLiveData.observe(viewLifecycleOwner) { foundWorkout ->
+            workoutLiveData.observeOnce(viewLifecycleOwner, Observer { foundWorkout ->
                 if (foundWorkout == null) {
                     Toast.makeText(requireActivity(), "Invalid workout", Toast.LENGTH_SHORT).show()
-                    return@observe
+                    return@Observer
                 }
 
-                exerciseAdapter.workoutId = foundWorkout.workout.workoutId
-                exerciseAdapter.updateList(foundWorkout.exercises)
+                sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
+                    val today = LocalDate.now()
+                    val sessionToday = sessions.filter {
+                        Instant.parse(it.session.startsAt)
+                            .atZone(AppLocale.ZONE)
+                            .toLocalDate() == today
+                    }
 
-                workoutLiveData.removeObservers(viewLifecycleOwner)
-            }
+                    val exercisedTodayIds = sessionToday.map { it.session.exerciseId }.toSet()
+                    val dailyExercise =
+                        foundWorkout.exercises.filter { it.exerciseId !in exercisedTodayIds }
+
+                    exerciseAdapter.workoutId = foundWorkout.workout.workoutId
+                    exerciseAdapter.updateList(dailyExercise)
+                    if (dailyExercise.isEmpty()) {
+                        binding.emptyMessage.visibility = View.VISIBLE
+                        binding.emptyMessage.text = "You completed all sessions!"
+                    } else {
+                        binding.emptyMessage.visibility = View.GONE
+                    }
+                }
+
+            })
+
         }
 
         val streakWidgetManager = StreakWidgetManager(
@@ -102,9 +127,17 @@ class HomeFragment : Fragment() {
             binding.streakWidget
         )
 
-        workoutViewModel.allWorkouts.observe(viewLifecycleOwner){ workouts ->
-            sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
-                streakWidgetManager.updateWidget(workouts.map { it.workout }, sessions.map { it.session })
+        workoutViewModel.allWorkouts.observe(viewLifecycleOwner) { workouts ->
+            sessionViewModel.allSessions.observeOnce(viewLifecycleOwner) { sessions ->
+                streakWidgetManager.updateWidget(
+                    workouts.map { it.workout },
+                    sessions.map { it.session })
+            }
+        }
+
+        binding.dailyStatsHeader.setOnClickListener {
+            Intent(requireActivity(), WidgetsActivity::class.java).also {
+                startActivity(it)
             }
         }
 
@@ -112,7 +145,14 @@ class HomeFragment : Fragment() {
 
     private fun setupHoursSpentWidget() {
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
-            val filtered = sessions.sortedBy { it.session.startsAt }
+            val zone = AppLocale.ZONE
+            val today = LocalDate.now(zone)
+            val filtered = sessions.sortedBy { it.session.startsAt }.filter {
+                val startsAt = Instant.parse(it.session.startsAt)
+                    .atZone(zone).toLocalDate()
+                today == startsAt
+            }
+
             val entries = filtered
                 .mapIndexed { index, item ->
                     val start = Instant.parse(item.session.startsAt)
@@ -124,7 +164,7 @@ class HomeFragment : Fragment() {
                     Entry(index.toFloat() + 1, hours.toFloat())
                 }
 
-            binding.hoursSpentCount.text = filtered.sumOf {
+            binding.hoursSpentCount.text = String.format("%.3f", filtered.sumOf {
                 val start = Instant.parse(it.session.startsAt)
                 val end = Instant.parse(it.session.endsAt)
 
@@ -132,7 +172,7 @@ class HomeFragment : Fragment() {
 
                 duration.toMinutes().toDouble() / 60
 
-            }.toString()
+            })
 
             // Create and style the dataset
             val dataSet = LineDataSet(entries, "Hours Spent")
@@ -184,10 +224,20 @@ class HomeFragment : Fragment() {
 
     private fun setupSetsWidget() {
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
-            val filtered =sessions.sortedBy { it.session.startsAt }
+            val zone = AppLocale.ZONE
+            val today = LocalDate.now(zone)
+            val filtered = sessions.sortedBy { it.session.startsAt }.filter {
+                val startsAt = Instant.parse(it.session.startsAt)
+                    .atZone(zone).toLocalDate()
+                today == startsAt
+            }
+
             val entries = filtered
                 .mapIndexed { index, item ->
-                    Entry(index.toFloat() + 1, item.session.restsPerSet.size.coerceAtLeast(1).toFloat())
+                    Entry(
+                        index.toFloat() + 1,
+                        item.session.restsPerSet.size.coerceAtLeast(1).toFloat()
+                    )
                 }
 
             binding.setsWidgetCount.text = filtered.sumOf { it.session.repsPerSet.size }.toString()
@@ -318,4 +368,13 @@ class ExerciseAdapter : RecyclerView.Adapter<ExerciseAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+}
+
+fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+    observe(lifecycleOwner, object : Observer<T> {
+        override fun onChanged(t: T) {
+            observer.onChanged(t)
+            removeObserver(this)
+        }
+    })
 }

@@ -100,6 +100,7 @@ class WorkoutsFragment : Fragment() {
     private val onClickEdit: (WorkoutWithExercises) -> Unit = { workoutWithExercises ->
         val intent = Intent(requireContext(), CreateUpdateWorkoutActivity::class.java).apply {
             putExtra(Consts.ARG_WORKOUT_ID, workoutWithExercises.workout.workoutId)
+            putExtra(Consts.ARG_DAY_OF_WEEK, workoutWithExercises.workout.dayOfWeek)
         }
         startActivity(intent)
     }
