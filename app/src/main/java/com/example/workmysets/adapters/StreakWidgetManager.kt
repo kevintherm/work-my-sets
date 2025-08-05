@@ -152,6 +152,10 @@ class StreakWidgetManager(
             val drawable = ContextCompat.getDrawable(context, drawableId)?.mutate()
             drawable?.setTint(ContextCompat.getColor(context, R.color.white))
             textView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, drawable)
+
+            if (isToday) {
+                textView.setTextColor(context.getColor(R.color.accent1))
+            }
         }
     }
 

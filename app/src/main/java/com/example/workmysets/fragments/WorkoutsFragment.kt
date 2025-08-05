@@ -141,7 +141,7 @@ class WorkoutsFragment : Fragment() {
                     .createStandardDialog()
                     .setHeading("Delete")
                     .setDescription(
-                        "Are you sure to delete workout?" +
+                        "Are you sure to delete workout? This will also delete all associated sessions!" +
                                 " This action cannot be undone"
                     )
                     .setIcon(R.drawable.ic_question)

@@ -10,11 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.workmysets.R
 import com.example.workmysets.data.viewmodels.SessionViewModel
 import com.example.workmysets.databinding.ActivitySessionDetailBinding
+import com.example.workmysets.utils.AppLocale
 import com.example.workmysets.utils.Consts
 import com.example.workmysets.utils.ErrorToast
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class SessionDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySessionDetailBinding
@@ -76,6 +79,13 @@ class SessionDetailActivity : AppCompatActivity() {
                 binding.duration.text = duration.toMinutes().toDouble().toString().plus(" min")
 
                 binding.notes.text = find.session.notes
+
+                val formatter = DateTimeFormatter.ofPattern("d MMMM, yyyy hh:mm a", Locale.US)
+                val startsAt = Instant.parse(find.session.startsAt).atZone(AppLocale.ZONE).toLocalDateTime().format(formatter)
+                val endsAt = Instant.parse(find.session.endsAt).atZone(AppLocale.ZONE).toLocalDateTime().format(formatter)
+
+                binding.startsAt.text = "Starts at $startsAt"
+                binding.endsAt.text = "Ends at $endsAt"
 
             }
 

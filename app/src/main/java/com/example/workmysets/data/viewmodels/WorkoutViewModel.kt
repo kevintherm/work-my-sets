@@ -9,6 +9,7 @@ import com.example.workmysets.data.database.AppDatabase
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.entities.workout.entity.Workout
 import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
+import com.example.workmysets.data.repositories.SessionRepository
 import com.example.workmysets.data.repositories.WorkoutRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

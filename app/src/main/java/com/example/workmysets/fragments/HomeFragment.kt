@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.SessionExerciseActivity
+import com.example.workmysets.activities.TrackSessionActivity
 import com.example.workmysets.activities.WidgetsActivity
 import com.example.workmysets.adapters.StreakWidgetManager
 import com.example.workmysets.data.entities.exercise.entity.Exercise
@@ -141,17 +142,25 @@ class HomeFragment : Fragment() {
             }
         }
 
+        binding.dailySessionsHeader.setOnClickListener{
+            Intent(requireActivity(), TrackSessionActivity::class.java).also {
+                startActivity(it)
+            }
+        }
+
     }
 
     private fun setupHoursSpentWidget() {
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
             val zone = AppLocale.ZONE
             val today = LocalDate.now(zone)
-            val filtered = sessions.sortedBy { it.session.startsAt }.filter {
+            val todaySessions = sessions.sortedBy { it.session.startsAt }.filter {
                 val startsAt = Instant.parse(it.session.startsAt)
                     .atZone(zone).toLocalDate()
                 today == startsAt
             }
+
+            val filtered = sessions.sortedBy { it.session.startsAt }
 
             val entries = filtered
                 .mapIndexed { index, item ->
@@ -164,7 +173,7 @@ class HomeFragment : Fragment() {
                     Entry(index.toFloat() + 1, hours.toFloat())
                 }
 
-            binding.hoursSpentCount.text = String.format("%.3f", filtered.sumOf {
+            binding.hoursSpentCount.text = String.format("%.1f", todaySessions.sumOf {
                 val start = Instant.parse(it.session.startsAt)
                 val end = Instant.parse(it.session.endsAt)
 
@@ -226,11 +235,13 @@ class HomeFragment : Fragment() {
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
             val zone = AppLocale.ZONE
             val today = LocalDate.now(zone)
-            val filtered = sessions.sortedBy { it.session.startsAt }.filter {
+            val todaySessions = sessions.sortedBy { it.session.startsAt }.filter {
                 val startsAt = Instant.parse(it.session.startsAt)
                     .atZone(zone).toLocalDate()
                 today == startsAt
             }
+
+            val filtered = sessions.sortedBy { it.session.startsAt }
 
             val entries = filtered
                 .mapIndexed { index, item ->
@@ -240,7 +251,7 @@ class HomeFragment : Fragment() {
                     )
                 }
 
-            binding.setsWidgetCount.text = filtered.sumOf { it.session.repsPerSet.size }.toString()
+            binding.setsWidgetCount.text = todaySessions.sumOf { it.session.repsPerSet.size }.toString()
 
             val dataSet = LineDataSet(entries, "Trend").apply {
                 color = requireActivity().getColor(R.color.accent1)
