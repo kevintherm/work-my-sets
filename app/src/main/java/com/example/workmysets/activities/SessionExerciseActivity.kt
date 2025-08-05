@@ -57,7 +57,7 @@ class SessionExerciseActivity : AppCompatActivity() {
     private val weightsPerSet: MutableList<Float> = mutableListOf()
     private val restPerSet: MutableList<Int> = mutableListOf()
 
-    private val CURRENT_STEP = MutableLiveData<SessionExerciseStep>(SessionExerciseStep.START_SET)
+    private val CURRENT_STEP = MutableLiveData(SessionExerciseStep.START_SET)
     private var isTimerRunning = false
     private var pauseOffset = 0L
 
@@ -211,7 +211,7 @@ class SessionExerciseActivity : AppCompatActivity() {
             b.topBar.titleText.text = exercise.name
             if (it.youtubeVideoId != null && it.youtubeVideoId!!.isNotEmpty() && savedInstanceState == null) {
                 b.guideVideoWebView.webViewClient = WebViewClient()
-                b.guideVideoWebView.webChromeClient = WebChromeClient()
+                b.guideVideoWebView.webChromeClient = CustomChromeClient()
                 val webSettings = b.guideVideoWebView.settings
                 webSettings.javaScriptEnabled = true
                 webSettings.allowFileAccess = true
@@ -227,7 +227,7 @@ class SessionExerciseActivity : AppCompatActivity() {
         CURRENT_STEP.observe(this, this::onLifecycleChange)
 
         onBackPressedDispatcher.addCallback {
-            if (isTimerRunning) handleToggleTimerButton()
+            if (isTimerRunning && CURRENT_STEP.value != SessionExerciseStep.START_REST) handleToggleTimerButton()
 
             PopupDialog.getInstance(this@SessionExerciseActivity)
                 .standardDialogBuilder()
@@ -255,14 +255,19 @@ class SessionExerciseActivity : AppCompatActivity() {
     }
 
     private fun handleToggleTimerButton() {
-        b.toggleTimerButton.isEnabled = false
-        b.stopTimerButton.isEnabled = false
-
         if (isTimerRunning) {
+            b.toggleTimerButton.isEnabled = false
+            b.stopTimerButton.isEnabled = false
+
             isTimerRunning = false
             b.chronometer.stop()
             pauseOffset = SystemClock.elapsedRealtime() - b.chronometer.base
             b.toggleTimerButton.setImageResource(R.drawable.ic_pause_fill)
+
+            b.circularProgressBar.rotateAndBack {
+                b.toggleTimerButton.isEnabled = true
+                b.stopTimerButton.isEnabled = true
+            }
         } else {
             isTimerRunning = true
             b.chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
@@ -280,11 +285,6 @@ class SessionExerciseActivity : AppCompatActivity() {
                     )
                 }
             }
-        }
-
-        b.circularProgressBar.rotateAndBack {
-            b.toggleTimerButton.isEnabled = true
-            b.stopTimerButton.isEnabled = true
         }
     }
 
