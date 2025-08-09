@@ -4,3 +4,5 @@
 
 ## Todo
 - add exercise crud
+- add search fullscreen modal
+- add notifications (maybe?)

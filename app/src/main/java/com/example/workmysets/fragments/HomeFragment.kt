@@ -82,8 +82,7 @@ class HomeFragment : Fragment() {
             if (users.isEmpty()) {
                 startActivity(Intent(requireActivity(), OnboardingActivity::class.java))
                 requireActivity().finish()
-            }
-            else {
+            } else {
                 val user = users.first()
                 binding.userName.text = user.name
             }
@@ -162,6 +161,16 @@ class HomeFragment : Fragment() {
             Intent(requireActivity(), TrackSessionActivity::class.java).also {
                 startActivity(it)
             }
+        }
+
+        binding.searchButton.setOnClickListener {
+            SearchModalFragment.newInstance()
+                .show(requireActivity().supportFragmentManager, "SearchModal")
+        }
+
+        binding.notificationsButton.setOnClickListener {
+            NotificationsFragment.newInstance(10)
+                .show(requireActivity().supportFragmentManager, "NotificationsModal")
         }
 
     }
