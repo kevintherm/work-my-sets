@@ -14,17 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkMySets">
         <activity
+            android:name=".activities.OnboardingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".activities.WidgetsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.SessionDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.SessionDetail"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.SessionExerciseActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.ConfigureScheduleActivity"
             android:exported="false"

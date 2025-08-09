@@ -10,11 +10,13 @@ import com.example.workmysets.data.converter.Converters
 import com.example.workmysets.data.dao.ExerciseDao
 import com.example.workmysets.data.dao.ScheduleDao
 import com.example.workmysets.data.dao.SessionDao
+import com.example.workmysets.data.dao.UserDao
 import com.example.workmysets.data.dao.WorkoutDao
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.entities.schedule.entity.Schedule
 import com.example.workmysets.data.entities.session.entity.Session
 import com.example.workmysets.data.entities.session.relation.SessionWorkoutCrossRef
+import com.example.workmysets.data.entities.user.entity.User
 import com.example.workmysets.data.entities.workout.entity.Workout
 import com.example.workmysets.data.entities.workout.relation.WorkoutExerciseCrossRef
 import com.example.workmysets.data.samples.SampleData
@@ -24,6 +26,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [
+        User::class,
         Schedule::class,
         Session::class,
         Workout::class,
@@ -39,6 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun exerciseDao(): ExerciseDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun SessionDao(): SessionDao
+    abstract fun UserDao(): UserDao
 
     companion object {
         @Volatile

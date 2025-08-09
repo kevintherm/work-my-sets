@@ -15,10 +15,11 @@
     <color name="accent1Light">#FFE0B2</color>
     <color name="accent1Semi">#FFF3E0</color>
     <color name="accent2">#EF4AD4</color>
-    <color name="accent2Light">#F8BFF0</color> <!-- lighter version -->
-    <color name="accent2Semi">#FDE5F8</color> <!-- even lighter (semi) -->
+    <color name="accent2Light">#F8BFF0</color>
+    <color name="accent2Semi">#FDE5F8</color>
     <color name="accent3">#69baa5</color>
     <color name="primaryLight">#DBD9FF</color>
     <color name="primaryLightSemi">#66DBD9FF</color>
     <color name="danger">#f20d30</color>
+    <color name="onboardingBg">#758BFD</color>
 </resources>

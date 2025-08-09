@@ -27,7 +27,8 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/ic_waving" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_avatar_male" />
 
                 <LinearLayout
                     android:layout_width="0dp"

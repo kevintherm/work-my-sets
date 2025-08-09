@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.map
-import com.example.workmysets.data.entities.workout.entity.Workout
-import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
 import com.example.workmysets.data.viewmodels.SessionsFragmentSharedViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentFilterBottomSheetBinding

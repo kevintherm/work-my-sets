@@ -26,6 +26,7 @@ import com.example.workmysets.adapters.StreakWidgetManager
 import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.SessionViewModel
+import com.example.workmysets.data.viewmodels.UserViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentHomeBinding
 import com.example.workmysets.utils.AppLocale
@@ -39,6 +40,9 @@ import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import androidx.fragment.app.viewModels
+import androidx.room.util.findColumnIndexBySuffix
+import com.example.workmysets.activities.OnboardingActivity
 
 class HomeFragment : Fragment() {
 
@@ -48,6 +52,7 @@ class HomeFragment : Fragment() {
     private lateinit var scheduleViewModel: ScheduleViewModel
     private lateinit var workoutViewModel: WorkoutViewModel
     private lateinit var sessionViewModel: SessionViewModel
+    private val userViewModel: UserViewModel by viewModels()
 
     private lateinit var exerciseAdapter: ExerciseAdapter
 
@@ -72,6 +77,17 @@ class HomeFragment : Fragment() {
 
         setupSetsWidget()
         setupHoursSpentWidget()
+
+        userViewModel.allUsers.observe(viewLifecycleOwner) { users ->
+            if (users.isEmpty()) {
+                startActivity(Intent(requireActivity(), OnboardingActivity::class.java))
+                requireActivity().finish()
+            }
+            else {
+                val user = users.first()
+                binding.userName.text = user.name
+            }
+        }
 
         exerciseAdapter = ExerciseAdapter()
         binding.dailySessionsRecycler.adapter = exerciseAdapter
@@ -142,7 +158,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.dailySessionsHeader.setOnClickListener{
+        binding.dailySessionsHeader.setOnClickListener {
             Intent(requireActivity(), TrackSessionActivity::class.java).also {
                 startActivity(it)
             }
@@ -251,7 +267,8 @@ class HomeFragment : Fragment() {
                     )
                 }
 
-            binding.setsWidgetCount.text = todaySessions.sumOf { it.session.repsPerSet.size }.toString()
+            binding.setsWidgetCount.text =
+                todaySessions.sumOf { it.session.repsPerSet.size }.toString()
 
             val dataSet = LineDataSet(entries, "Trend").apply {
                 color = requireActivity().getColor(R.color.accent1)

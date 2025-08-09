@@ -46,4 +46,9 @@
         <item name="strokeColor">@color/secondary</item>
         <item name="rippleColor">@color/secondaryLight</item>
     </style>
+
+    <style name="OnboardingTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/onboardingBg</item>
+        <item name="android:navigationBarColor">@color/onboardingBg</item>
+    </style>
 </resources>
