@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "exercises")
 data class Exercise(
-    val name: String,
+    var name: String,
     val targetMuscle: String,
     val calorieBurned: Double,
     val youtubeVideoId: String? = null

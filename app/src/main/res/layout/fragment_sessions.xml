@@ -36,8 +36,7 @@
                     android:id="@+id/activeFiltersGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleLine="true"
-                    />
+                    app:singleLine="true" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -46,6 +45,14 @@
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_session_recycler" />
+
+            <TextView
+                android:id="@+id/sessionsEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Looks like you haven’t done any exercises yet."
+                android:textColor="@color/secondary"
+                android:visibility="gone"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

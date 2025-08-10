@@ -177,7 +177,8 @@
                                     android:layout_gravity="bottom"
                                     android:includeFontPadding="false"
                                     android:text="900"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold"
+                                    android:textColor="@color/secondary" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -187,7 +188,8 @@
                                     android:includeFontPadding="false"
                                     android:text="Sets"
                                     android:textSize="12sp"
-                                    android:textStyle="normal" />
+                                    android:textStyle="normal"
+                                    android:textColor="@color/secondary" />
 
                             </LinearLayout>
                         </FrameLayout>
@@ -267,7 +269,8 @@
                                     android:layout_gravity="bottom"
                                     android:includeFontPadding="false"
                                     android:text="900"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold"
+                                    android:textColor="@color/secondary" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -277,7 +280,8 @@
                                     android:includeFontPadding="false"
                                     android:text="Hours"
                                     android:textSize="12sp"
-                                    android:textStyle="normal" />
+                                    android:textStyle="normal"
+                                    android:textColor="@color/secondary" />
 
                             </LinearLayout>
                         </FrameLayout>

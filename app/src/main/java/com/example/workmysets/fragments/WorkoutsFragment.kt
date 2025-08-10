@@ -6,17 +6,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workmysets.R
 import com.example.workmysets.activities.ConfigureScheduleActivity
+import com.example.workmysets.activities.CreateUpdateExerciseActivity
 import com.example.workmysets.activities.CreateUpdateWorkoutActivity
 import com.example.workmysets.adapters.WorkoutAdapter
+import com.example.workmysets.data.entities.exercise.entity.Exercise
 import com.example.workmysets.data.entities.schedule.entity.ScheduleWithWorkouts
 import com.example.workmysets.data.entities.workout.entity.WorkoutWithExercises
+import com.example.workmysets.data.viewmodels.ExerciseViewModel
 import com.example.workmysets.data.viewmodels.ScheduleViewModel
 import com.example.workmysets.data.viewmodels.WorkoutViewModel
 import com.example.workmysets.databinding.FragmentWorkoutsBinding
@@ -33,6 +38,7 @@ class WorkoutsFragment : Fragment() {
 
     private lateinit var scheduleViewModel: ScheduleViewModel
     private lateinit var workoutViewModel: WorkoutViewModel
+    private val exerciseViewModel: ExerciseViewModel by activityViewModels()
 
     private var schedule: ScheduleWithWorkouts? = null;
 
@@ -49,7 +55,78 @@ class WorkoutsFragment : Fragment() {
 
         setupScheduleSection()
         setupWorkoutsSection()
+        setupExercisesSection()
 
+    }
+
+    private fun setupExercisesSection() {
+        class ExerciseAdapter : RecyclerView.Adapter<ExerciseAdapter.ViewHolder>() {
+            val items = mutableListOf<Exercise>()
+            var onClick: ((Exercise) -> Unit)? = null
+
+            inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+                val exerciseName: TextView = view.findViewById(R.id.exerciseName)
+                val experienceCount: TextView = view.findViewById(R.id.experience)
+
+                fun bind(item: Exercise) {
+                    onClick?.invoke(item)
+                }
+            }
+
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.exercise_item_recycler, parent, false)
+                return ViewHolder(view)
+            }
+
+            override fun getItemCount(): Int = items.size
+
+            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                val item = items[position]
+
+                holder.exerciseName.text = item.name
+                holder.experienceCount.text = "0 Sets"
+                holder.itemView.setOnClickListener {
+                    holder.bind(item)
+                }
+            }
+
+            fun updateList(newList: List<Exercise>) {
+                items.clear()
+                items.addAll(newList)
+                notifyDataSetChanged()
+            }
+
+        }
+
+        binding.topBarExercisesSection.titleText.text = "Exercises"
+        binding.topBarExercisesSection.actionButton.visibility = View.VISIBLE
+        binding.topBarExercisesSection.actionButton.setImageResource(R.drawable.ic_add)
+        binding.topBarExercisesSection.actionButton.setOnClickListener {
+            val intent = Intent(context, CreateUpdateExerciseActivity::class.java)
+            startActivity(intent)
+        }
+
+        val adapter = ExerciseAdapter()
+        binding.exercisesRecycler.adapter = adapter
+        binding.exercisesRecycler.layoutManager = LinearLayoutManager(requireActivity())
+
+        adapter.onClick = { exercise ->
+            val intent = Intent(requireContext(), CreateUpdateExerciseActivity::class.java).apply {
+                putExtra(Consts.ARG_EXERCISE_ID, exercise.exerciseId)
+            }
+            startActivity(intent)
+        }
+
+        exerciseViewModel.allExercises.observe(viewLifecycleOwner) { exercises ->
+            if (exercises.isEmpty()) {
+                binding.exercisesRecyclerEmpty.visibility = View.VISIBLE
+            } else {
+                binding.exercisesRecyclerEmpty.visibility = View.GONE
+            }
+
+            adapter.updateList(exercises)
+        }
     }
 
     private fun setupScheduleSection() {
@@ -120,7 +197,15 @@ class WorkoutsFragment : Fragment() {
         binding.workoutsRecycler.adapter = workoutAdapter
 
         workoutViewModel = ViewModelProvider(this)[WorkoutViewModel::class.java]
-        workoutViewModel.allWorkouts.observe(viewLifecycleOwner) { workoutAdapter.submitList(it) }
+        workoutViewModel.allWorkouts.observe(viewLifecycleOwner) {
+            if (it.isEmpty()) {
+                binding.workoutsRecyclerEmpty.visibility = View.VISIBLE
+            } else {
+                binding.workoutsRecyclerEmpty.visibility = View.GONE
+            }
+
+            workoutAdapter.submitList(it)
+        }
 
         ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {

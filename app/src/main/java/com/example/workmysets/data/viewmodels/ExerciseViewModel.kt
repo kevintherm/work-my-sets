@@ -34,4 +34,15 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
         return repository.findById(exerciseId)
     }
 
+    fun insert(exercise: Exercise) = viewModelScope.launch {
+        repository.insert(exercise)
+    }
+
+    fun update(exercise: Exercise) = viewModelScope.launch {
+        repository.update(exercise)
+    }
+
+    fun delete(exercise: Exercise) = viewModelScope.launch {
+        repository.delete(exercise)
+    }
 }

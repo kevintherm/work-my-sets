@@ -109,8 +109,36 @@
             android:id="@+id/workoutsRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_workout_card" />
+            android:layout_marginBottom="48dp"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/workoutsRecyclerEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="You currently don't have any workouts yet"
+            android:textColor="@color/secondary"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/topBarExercisesSection"
+            layout="@layout/top_bar" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/exercisesRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/exercisesRecyclerEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="You currently don't have any workouts yet"
+            android:textColor="@color/secondary"
+            android:visibility="gone" />
 
     </LinearLayout>
 

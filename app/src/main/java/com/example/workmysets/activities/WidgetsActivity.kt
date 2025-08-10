@@ -18,6 +18,7 @@ import com.example.workmysets.databinding.ActivityWidgetsBinding
 import com.example.workmysets.utils.AppLocale
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
@@ -72,6 +73,9 @@ class WidgetsActivity : AppCompatActivity() {
     private lateinit var lastWeekSessions: List<SessionWithExercise>
     private lateinit var currentWeekSessions: List<SessionWithExercise>
 
+    private val neutralTextColor = Color.parseColor("#B0B0B0")
+    private val neutralGridColor = Color.parseColor("#808080")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -117,7 +121,7 @@ class WidgetsActivity : AppCompatActivity() {
         }
     }
 
-    fun groupSessionsByWeek(sessions: List<SessionWithExercise>): List<WeekGroup> {
+    private fun groupSessionsByWeek(sessions: List<SessionWithExercise>): List<WeekGroup> {
         val sessionsByDate = sessions.map {
             val date = Instant.parse(it.session.startsAt).atZone(AppLocale.ZONE).toLocalDate()
             date to it
@@ -260,7 +264,9 @@ class WidgetsActivity : AppCompatActivity() {
 
         binding.totalSetsCompare.text = "You did $description sets compared to last week."
 
-        val averageSets = if(allSessions.isNotEmpty()) allSessions.map { it.session.repsPerSet.size }.average() else 0.0
+        val averageSets =
+            if (allSessions.isNotEmpty()) allSessions.map { it.session.repsPerSet.size }
+                .average() else 0.0
         binding.averageSets.text = String.format("%.1f sets", averageSets)
 
         val data = groupedSessions.mapIndexed { index, it ->
@@ -292,7 +298,8 @@ class WidgetsActivity : AppCompatActivity() {
             }.toMutableMap()
 
         val totalMinutesSpent = hoursSpentOnExercise.values.sum()
-        val averageExerciseDuration = if (allSessions.isNotEmpty()) totalMinutesSpent.toDouble() / allSessions.size else 0.0
+        val averageExerciseDuration =
+            if (allSessions.isNotEmpty()) totalMinutesSpent.toDouble() / allSessions.size else 0.0
 
         fun formatMinutes(minutes: Long): String {
             val hours = minutes / 60
@@ -352,7 +359,8 @@ class WidgetsActivity : AppCompatActivity() {
         if (totalMinutesSpent == 0L) {
             data = listOf(PieEntry(100f, "No Data"))
         } else {
-            val topExercises = hoursSpentOnExercise.entries.sortedByDescending { it.value }.take(3).associate { it.key to it.value }.toMutableMap()
+            val topExercises = hoursSpentOnExercise.entries.sortedByDescending { it.value }.take(3)
+                .associate { it.key to it.value }.toMutableMap()
             val otherMinutes = totalMinutesSpent - topExercises.values.sum()
             if (otherMinutes > 0) {
                 topExercises["Other"] = otherMinutes
@@ -405,7 +413,8 @@ class WidgetsActivity : AppCompatActivity() {
         val dataEntries = (0..6).map { dayIndex ->
             val dayOfWeek = DayOfWeek.of(dayIndex + 1)
             val dailyTotalRest = currentWeekSessions.filter {
-                Instant.parse(it.session.startsAt).atZone(AppLocale.ZONE).toLocalDate().dayOfWeek == dayOfWeek
+                Instant.parse(it.session.startsAt).atZone(AppLocale.ZONE)
+                    .toLocalDate().dayOfWeek == dayOfWeek
             }.sumOf { it.session.restsPerSet.sum() }.toFloat()
 
             Entry(dayIndex.toFloat(), dailyTotalRest)
@@ -490,6 +499,54 @@ class WidgetsActivity : AppCompatActivity() {
     }
 
 
+    private fun styleChart(
+        chart: Chart<*>, xAxisLabels: List<String>? = null, yAxisUnit: String? = null
+    ) {
+        chart.description.isEnabled = false
+        chart.legend.isEnabled = false
+
+        if (chart is BarLineChartBase<*>) {
+            chart.axisRight.isEnabled = false
+            chart.setScaleEnabled(false)
+
+            chart.axisLeft.apply {
+                textColor = neutralTextColor
+                setDrawGridLines(true)
+                gridColor = neutralGridColor
+                axisLineColor = neutralTextColor
+                if (yAxisUnit != null) {
+                    valueFormatter = object : ValueFormatter() {
+                        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                            return "${value.toInt()} $yAxisUnit"
+                        }
+                    }
+                }
+            }
+
+            chart.xAxis.apply {
+                textColor = neutralTextColor
+                setDrawGridLines(false)
+                axisLineColor = neutralTextColor
+                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                if (xAxisLabels != null) {
+                    valueFormatter = IndexAxisValueFormatter(xAxisLabels)
+                }
+            }
+        }
+    }
+
+    private fun stylePieChart(chart: PieChart) {
+        chart.isDrawHoleEnabled = true
+        chart.holeRadius = 58f
+        chart.transparentCircleRadius = 61f
+        chart.setUsePercentValues(true)
+        chart.description.isEnabled = false
+
+        chart.legend.textColor = neutralTextColor
+        chart.setEntryLabelColor(neutralTextColor)
+    }
+
     private fun setupLineChartData(
         dataEntries: List<Entry> = listOf(),
         chart: LineChart,
@@ -508,7 +565,7 @@ class WidgetsActivity : AppCompatActivity() {
 
         val dataSet = LineDataSet(dataEntries, label).apply {
             color = chartColor
-            valueTextColor = Color.DKGRAY
+            valueTextColor = neutralTextColor
             setCircleColor(chartColor)
             lineWidth = 2.5f
             mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -536,7 +593,7 @@ class WidgetsActivity : AppCompatActivity() {
 
         val dataSet = BarDataSet(dataEntries, label).apply {
             colors = ColorTemplate.MATERIAL_COLORS.toList()
-            valueTextColor = Color.DKGRAY
+            valueTextColor = neutralTextColor
             valueTextSize = 10f
         }
         chart.data = BarData(dataSet)
@@ -563,7 +620,7 @@ class WidgetsActivity : AppCompatActivity() {
             colors = ColorTemplate.VORDIPLOM_COLORS.toList()
             valueFormatter = PercentFormatter(chart)
             valueTextSize = 12f
-            valueTextColor = Color.BLACK
+            valueTextColor = neutralTextColor
             sliceSpace = 2f
         }
 
@@ -572,52 +629,6 @@ class WidgetsActivity : AppCompatActivity() {
         configureChart?.invoke(chart)
         configureDataset?.invoke(dataSet)
         chart.invalidate()
-    }
-
-
-    private fun styleChart(
-        chart: Chart<*>, xAxisLabels: List<String>? = null, yAxisUnit: String? = null
-    ) {
-        chart.description.isEnabled = false
-        chart.legend.isEnabled = false
-
-        if (chart is com.github.mikephil.charting.charts.BarLineChartBase<*>) {
-            chart.axisRight.isEnabled = false
-            chart.setScaleEnabled(false)
-
-            chart.axisLeft.apply {
-                textColor = Color.DKGRAY
-                setDrawGridLines(true) // Grid lines can be helpful
-                gridColor = Color.LTGRAY
-                if (yAxisUnit != null) {
-                    valueFormatter = object : ValueFormatter() {
-                        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                            return "${value.toInt()} $yAxisUnit"
-                        }
-                    }
-                }
-            }
-
-            chart.xAxis.apply {
-                textColor = Color.DKGRAY
-                setDrawGridLines(false)
-                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                if (xAxisLabels != null) {
-                    valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-                }
-            }
-        }
-    }
-
-    private fun stylePieChart(chart: PieChart) {
-        chart.isDrawHoleEnabled = true
-        chart.holeRadius = 58f
-        chart.transparentCircleRadius = 61f
-        chart.setUsePercentValues(true)
-        chart.description.isEnabled = false
-        chart.legend.textColor = Color.DKGRAY
-        chart.setEntryLabelColor(Color.DKGRAY)
     }
 
     /**
@@ -664,10 +675,13 @@ class WidgetsActivity : AppCompatActivity() {
 
             // Animate only if the chart is visible and hasn't been animated yet
             if (Rect.intersects(scrollBounds, chartBounds) && !animatedViews.contains(chart)) {
-                if(chart.data == null || chart.data.entryCount == 0) continue
+                if (chart.data == null || chart.data.entryCount == 0) continue
 
                 when (chart) {
-                    is LineChart, is BarChart, is PieChart -> chart.animateY(1000, Easing.EaseInOutCubic)
+                    is LineChart, is BarChart, is PieChart -> chart.animateY(
+                        1000,
+                        Easing.EaseInOutCubic
+                    )
                 }
                 animatedViews.add(chart)
             }

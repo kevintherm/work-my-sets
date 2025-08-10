@@ -90,6 +90,12 @@ class SessionsFragment : Fragment() {
 
     private fun setupObservers() {
         sessionViewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
+            if (sessions.isEmpty()) {
+                binding.sessionsEmpty.visibility = View.VISIBLE
+            } else {
+                binding.sessionsEmpty.visibility = View.GONE
+            }
+
             sessionList = sessions
             applyFilters()
         }
