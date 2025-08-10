@@ -43,40 +43,46 @@ class NotificationsFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        activity?.findViewById<RecyclerView>(R.id.list)?.layoutManager =
-            LinearLayoutManager(context)
-        activity?.findViewById<RecyclerView>(R.id.list)?.adapter =
-            arguments?.getInt(ARG_ITEM_COUNT)?.let { ItemAdapter(it) }
+        val dummyList = listOf(
+            "New workout plan available",
+            "Don't forget leg day tomorrow",
+            "You’ve hit a new PR in squats!",
+            "Weekly summary is ready",
+            "Hydration reminder"
+        )
+
+        binding.list.layoutManager = LinearLayoutManager(context)
+        binding.list.adapter = ItemAdapter(dummyList)
+
+        binding.dismissButton.setOnClickListener {
+            dismiss()
+        }
     }
 
     private inner class ViewHolder internal constructor(binding: FragmentNotificationsListDialogItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        internal val text: TextView = binding.text
+        internal val text: TextView = binding.itemName
     }
 
-    private inner class ItemAdapter internal constructor(private val mItemCount: Int) :
+    private inner class ItemAdapter(private val items: List<String>) :
         RecyclerView.Adapter<ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
             return ViewHolder(
                 FragmentNotificationsListDialogItemBinding.inflate(
-                    LayoutInflater.from(
-                        parent.context
-                    ), parent, false
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
                 )
             )
-
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.text.text = position.toString()
+            holder.text.text = items[position]
         }
 
-        override fun getItemCount(): Int {
-            return mItemCount
-        }
+        override fun getItemCount(): Int = items.size
     }
 
     companion object {

@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_bell"
+            android:src="@drawable/ic_search"
             app:tint="@color/secondary" />
 
         <TextView
@@ -39,8 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chevron_right"
-            android:theme="@style/ThemeAwareImageButton"
-            android:visibility="gone"/>
+            android:theme="@style/ThemeAwareImageButton" />
 
     </LinearLayout>
 
